@@ -1,0 +1,60 @@
+### 1.0.1.14 (2022-12-30)
+
+Metadata changes only
+
+### 1.0.1.13 (2022-04-20)
+
+Drop support for `base` 4.11 (GHC 8.4) and `base` 4.12 (GHC 8.6)
+
+Modify documentation on the `Lift` class. Previously it indicated that the class
+was for converting ASCII into supersets of ASCII. The class's purpose is now
+restated as being a conversion from any character set to any other larger
+character set. The purpose is to indicate that the ASCII subset types defined in
+the `ascii-numbers` package may reasonably have `Lift` instances.
+
+### 1.0.1.12 (2022-03-22)
+
+Switch test-suite over to `hedgehog`
+
+### 1.0.0.10 (2022-01-09)
+
+Support GHC 9.2
+
+### 1.0.1.8 (2021-11-13)
+
+Support `hashable-1.4`
+
+### 1.0.1.6 (2021-09-26)
+
+Add a test suite
+
+Raise `text` lower bound to `1.2.3`
+
+### 1.0.1.4 (2021-02-10)
+
+Support GHC 9.0
+
+### 1.0.1.2 (2021-02-09)
+
+Support `bytestring-0.11`
+
+### 1.0.1.0 (2021-01-27)
+
+New functions:
+
+  - `convertCharOrFail`
+  - `convertStringMaybe`
+  - `convertStringOrFail`
+  - `convertCharMaybe`
+
+### 1.0.0.4 (2021-01-25)
+
+Add some comments
+
+### 1.0.0.2 (2020-05-18)
+
+Support GHC 8.10
+
+### 1.0.0.0 (2020-05-05)
+
+Initial release
