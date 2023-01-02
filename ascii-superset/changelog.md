@@ -1,3 +1,7 @@
+### Unreleased
+
+Switch test suite from `hedgehog` to `hspec`
+
 ### 1.0.1.15 (2022-01-02)
 
 Minor Cabal correction (change `extra-doc-files` to `extra-source-files`)
