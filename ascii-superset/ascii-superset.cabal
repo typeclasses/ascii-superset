@@ -34,7 +34,16 @@ common base
     ghc-options: -Wall
 
     default-extensions:
+        AllowAmbiguousTypes
+        DataKinds
+        FlexibleContexts
+        FlexibleInstances
+        KindSignatures
+        MultiParamTypeClasses
         NoImplicitPrelude
+        RankNTypes
+        ScopedTypeVariables
+        TypeApplications
 
     build-depends:
         ascii-char ^>= 1.0
