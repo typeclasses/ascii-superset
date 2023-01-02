@@ -74,6 +74,10 @@ instance StringSuperset string => I.StringIso (ASCII string) where
     toCharList = S.toCharListUnsafe
     mapChars = S.mapCharsUnsafe
 
+{-| Change the type of an ASCII superset value that is known to be valid ASCII
+
+This is "unsafe" because this assertion is unchecked, so this function is capable
+of producing an invalid 'ASCII' value. -}
 asciiUnsafe :: superset -> ASCII superset
 asciiUnsafe = ASCII_Unsafe
 
