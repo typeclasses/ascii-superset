@@ -1,13 +1,17 @@
 module ASCII.Lift (Lift (..)) where
 
+import ASCII.Case (Case (..))
+import ASCII.CaseRefinement (ASCII'case)
 import ASCII.Char (Char)
 import ASCII.Refinement (ASCII)
 import ASCII.Superset (CharSuperset, StringSuperset)
 
 import qualified ASCII.Refinement as Refinement
 import qualified ASCII.Superset as Superset
+import qualified ASCII.CaseRefinement as CaseRefinement
 
 import qualified Prelude
+import Data.Function ((.))
 
 {-| Embedding of one character set within another
 
@@ -33,6 +37,8 @@ class Lift subset superset where
 constructor may be lifted back into the superset by unwrapping it from the
 'ASCII' type. -}
 instance Lift (ASCII superset) superset where lift = Refinement.lift
+
+instance Lift (ASCII'case letterCase superset) superset where lift = CaseRefinement.lift
 
 {-| An ASCII 'Char' may be 'lift'ed into any larger character set (a
 'CharSuperset'); for example, 'lift' can convert an ASCII character into a value

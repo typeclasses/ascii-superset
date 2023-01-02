@@ -1,4 +1,9 @@
-### Unreleased
+### 1.0.2.0 (2023-01-02)
+
+Add module `ASCII.CaseRefinement`
+
+* This includes `ASCII'case`, a new refinement type for characters strings.
+  It asserts that any character which is a letter must be of a particular case.
 
 Switch test suite from `hedgehog` to `hspec`
 
