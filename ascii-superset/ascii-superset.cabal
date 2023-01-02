@@ -1,7 +1,7 @@
 cabal-version: 3.0
 
 name: ascii-superset
-version: 1.0.1.14
+version: 1.0.1.15
 synopsis: Representing ASCII with refined supersets
 category: Data, Text
 
@@ -23,7 +23,7 @@ maintainer: Chris Martin, Julie Moronuki
 homepage: https://github.com/typeclasses/ascii-superset
 bug-reports: https://github.com/typeclasses/ascii-superset/issues
 
-extra-doc-files: *.md
+extra-source-files: *.md
 
 source-repository head
     type: git
@@ -39,7 +39,7 @@ common base
     build-depends:
         ascii-char ^>= 1.0
       , base ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17
-      , text ^>= 1.2.4.1 || ^>= 2.0
+      , text ^>= 1.2.4 || ^>= 2.0
 
 library
     import: base
