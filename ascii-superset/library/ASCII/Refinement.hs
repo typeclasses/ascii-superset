@@ -10,7 +10,7 @@ import qualified ASCII.Char as ASCII
 import qualified ASCII.Isomorphism as I
 import qualified ASCII.Superset as S
 
-import ASCII.Superset (ToChar, FromChar, CharSuperset, StringSuperset)
+import ASCII.Superset (ToChar, FromChar, CharSuperset, ToString, FromString, StringSuperset)
 import Data.Bool (Bool (..))
 import Data.Data (Data)
 import Data.Eq (Eq)
@@ -67,11 +67,15 @@ instance CharSuperset char => CharSuperset (ASCII char)
 instance CharSuperset char => I.CharIso (ASCII char) where
     toChar = S.toCharUnsafe
 
-instance StringSuperset string => StringSuperset (ASCII string) where
+instance ToString string => ToString (ASCII string) where
     isAsciiString _ = True
-    fromCharList = asciiUnsafe . S.fromCharList
     toCharListUnsafe = S.toCharListUnsafe . lift
     toCharListSub = S.toCharListUnsafe . lift
+
+instance FromString string => FromString (ASCII string) where
+    fromCharList = asciiUnsafe . S.fromCharList
+
+instance StringSuperset string => StringSuperset (ASCII string) where
     substituteString = id
 
 instance StringSuperset string => I.StringIso (ASCII string) where

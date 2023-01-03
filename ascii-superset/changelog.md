@@ -1,7 +1,12 @@
 ### 1.1.0.0
 
-Add classes `ToChar` and `FromChar`, of which `CharSuperset` is now a subclass
-with no methods of its own.
+Add classes `ToChar` (`isAsciiChar`, `toCharUnsafe`) and `FromChar`
+(`fromChar`), of which `CharSuperset` is now a subclass with no methods of its
+own.
+
+Add classes `ToString` (`isAsciiString`, `toCharListUnsafe`, `toCharListSub`)
+and `FromString` (`fromCharList`), of which `StringSuperset` is now a subclass
+which still has some methods (`substituteString`, `mapCharsUnsafe`).
 
 ### 1.0.2.0 (2023-01-02)
 
