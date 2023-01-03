@@ -6,10 +6,16 @@ own.
 
 Add classes `ToString` (`isAsciiString`, `toCharListUnsafe`, `toCharListSub`)
 and `FromString` (`fromCharList`), of which `StringSuperset` is now a subclass
-which still has some methods (`substituteString`, `mapCharsUnsafe`).
+which still has some methods (`substituteString` and `mapCharsUnsafe`).
 
 Add class `ToCaselessChar` (`isAsciiCaselessChar`, `toCaselessCharUnsafe`),
-which is a superclass of `ToChar`.
+which is a superclass of `ToChar`. Also added related functions
+`toCaselessCharMaybe`, `toCaselessCharOrFail`, and `toCaselessCharSub`.
+
+Add class `ToCaselessString` (`isAsciiCaselessString`,
+`toCaselessCharListUnsafe`, `toCaselessCharListSub`) which is a superclass of
+`ToString`. Also added related functions `toCaselessCharListMaybe` and
+`toCaselessCharListOrFail`.
 
 ### 1.0.2.0 (2023-01-02)
 

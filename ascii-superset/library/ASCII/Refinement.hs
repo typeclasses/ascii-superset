@@ -71,6 +71,11 @@ instance S.CharSuperset char => S.CharSuperset (ASCII char)
 instance S.CharSuperset char => I.CharIso (ASCII char) where
     toChar = S.toCharUnsafe
 
+instance S.ToCaselessString string => S.ToCaselessString (ASCII string) where
+    isAsciiCaselessString _ = Bool.True
+    toCaselessCharListUnsafe = S.toCaselessCharListUnsafe . lift
+    toCaselessCharListSub = S.toCaselessCharListSub . lift
+
 instance S.ToString string => S.ToString (ASCII string) where
     isAsciiString _ = Bool.True
     toCharListUnsafe = S.toCharListUnsafe . lift

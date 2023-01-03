@@ -2,12 +2,12 @@ module ASCII.Superset
   (
     {- * Characters -}
     {- ** Class -} ToCaselessChar (..), ToChar (..), FromChar (..), CharSuperset,
-    {- ** Functions -} asCharUnsafe, toCharMaybe, toCharOrFail,
-        toCharSub, substituteChar, convertCharMaybe, convertCharOrFail,
+    {- ** Functions -} asCharUnsafe, toCharMaybe, toCaselessCharMaybe, toCharOrFail, toCaselessCharOrFail,
+        toCharSub, toCaselessCharSub, substituteChar, convertCharMaybe, convertCharOrFail,
 
     {- * Strings -}
-    {- ** Class -} ToString (..), FromString (..), StringSuperset (..),
-    {- ** Functions -} toCharListMaybe, toCharListOrFail,
+    {- ** Class -} ToCaselessString (..), ToString (..), FromString (..), StringSuperset (..),
+    {- ** Functions -} toCharListMaybe, toCaselessCharListMaybe, toCharListOrFail, toCaselessCharListOrFail,
         convertStringMaybe, convertStringOrFail
   )
   where
@@ -64,12 +64,22 @@ asCharUnsafe f = fromChar . f . toCharUnsafe
 toCharMaybe :: ToChar char => char -> Maybe ASCII.Char
 toCharMaybe = toCharOrFail
 
+toCaselessCharMaybe :: ToCaselessChar char => char -> Maybe CaselessChar
+toCaselessCharMaybe = toCaselessCharOrFail
+
 toCharOrFail :: (ToChar char, MonadFail context) => char -> context ASCII.Char
 toCharOrFail x = if isAsciiChar x then return (toCharUnsafe x)
     else fail "Not an ASCII character"
 
+toCaselessCharOrFail :: (ToCaselessChar char, MonadFail context) => char -> context CaselessChar
+toCaselessCharOrFail x = if isAsciiCaselessChar x then return (toCaselessCharUnsafe x)
+    else fail "Not an ASCII character"
+
 toCharSub :: ToChar char => char -> ASCII.Char
 toCharSub x = if isAsciiChar x then toCharUnsafe x else ASCII.Substitute
+
+toCaselessCharSub :: ToCaselessChar char => char -> CaselessChar
+toCaselessCharSub x = if isAsciiCaselessChar x then toCaselessCharUnsafe x else Caseless.Substitute
 
 substituteChar :: CharSuperset char => char -> char
 substituteChar x = if isAsciiChar x then x else fromChar ASCII.Substitute
@@ -91,7 +101,15 @@ convertCharOrFail = fmap fromChar . toCharOrFail
 
 ---  String  ---
 
-class ToString string where
+class ToCaselessString string where
+
+    isAsciiCaselessString :: string -> Bool
+
+    toCaselessCharListUnsafe :: string -> [CaselessChar]
+
+    toCaselessCharListSub :: string -> [CaselessChar]
+
+class ToCaselessString string => ToString string where
 
     isAsciiString :: string -> Bool
 
@@ -113,9 +131,17 @@ class (ToString string, FromString string) => StringSuperset string where
 toCharListMaybe :: ToString string => string -> Maybe [ASCII.Char]
 toCharListMaybe = toCharListOrFail
 
+toCaselessCharListMaybe :: ToCaselessString string => string -> Maybe [CaselessChar]
+toCaselessCharListMaybe = toCaselessCharListOrFail
+
 toCharListOrFail :: (ToString string, MonadFail context) =>
     string -> context [ASCII.Char]
 toCharListOrFail x = if isAsciiString x then return (toCharListUnsafe x)
+    else fail "String contains non-ASCII characters"
+
+toCaselessCharListOrFail :: (ToCaselessString string, MonadFail context) =>
+    string -> context [CaselessChar]
+toCaselessCharListOrFail x = if isAsciiCaselessString x then return (toCaselessCharListUnsafe x)
     else fail "String contains non-ASCII characters"
 
 {-| Convert from one ASCII-superset string type to another by converting each
@@ -220,6 +246,11 @@ instance CharSuperset Word.Word8
 
 ---
 
+instance ToCaselessChar char => ToCaselessString [char] where
+    isAsciiCaselessString = List.all isAsciiCaselessChar
+    toCaselessCharListUnsafe = List.map toCaselessCharUnsafe
+    toCaselessCharListSub = List.map toCaselessCharSub
+
 instance ToChar char => ToString [char] where
     isAsciiString = List.all isAsciiChar
     toCharListUnsafe = List.map toCharUnsafe
@@ -232,6 +263,11 @@ instance CharSuperset char => StringSuperset [char] where
     substituteString = List.map substituteChar
 
 ---
+
+instance ToCaselessString T.Text where
+    isAsciiCaselessString = T.all isAsciiChar
+    toCaselessCharListUnsafe = toCaselessCharListUnsafe . T.unpack
+    toCaselessCharListSub = toCaselessCharListSub . T.unpack
 
 instance ToString T.Text where
     isAsciiString = T.all isAsciiChar
@@ -247,6 +283,11 @@ instance StringSuperset T.Text where
 
 ---
 
+instance ToCaselessString LT.Text where
+    isAsciiCaselessString = LT.all isAsciiChar
+    toCaselessCharListUnsafe = toCaselessCharListUnsafe . LT.unpack
+    toCaselessCharListSub = toCaselessCharListSub . LT.unpack
+
 instance ToString LT.Text where
     isAsciiString = LT.all isAsciiChar
     toCharListUnsafe = toCharListUnsafe . LT.unpack
@@ -260,6 +301,11 @@ instance StringSuperset LT.Text where
     mapCharsUnsafe f = LT.map (asCharUnsafe f)
 
 ---
+
+instance ToCaselessString TB.Builder where
+    isAsciiCaselessString = isAsciiCaselessString . TB.toLazyText
+    toCaselessCharListUnsafe = toCaselessCharListUnsafe . TB.toLazyText
+    toCaselessCharListSub = toCaselessCharListSub . TB.toLazyText
 
 instance ToString TB.Builder where
     isAsciiString = isAsciiString . TB.toLazyText
@@ -275,6 +321,11 @@ instance StringSuperset TB.Builder where
 
 ---
 
+instance ToCaselessString BS.ByteString where
+    isAsciiCaselessString = BS.all isAsciiCaselessChar
+    toCaselessCharListUnsafe = toCaselessCharListUnsafe . BS.unpack
+    toCaselessCharListSub = toCaselessCharListSub . BS.unpack
+
 instance ToString BS.ByteString where
     isAsciiString = BS.all isAsciiChar
     toCharListUnsafe = toCharListUnsafe . BS.unpack
@@ -289,6 +340,11 @@ instance StringSuperset BS.ByteString where
 
 ---
 
+instance ToCaselessString LBS.ByteString where
+    isAsciiCaselessString = LBS.all isAsciiCaselessChar
+    toCaselessCharListUnsafe = toCaselessCharListUnsafe . LBS.unpack
+    toCaselessCharListSub = toCaselessCharListSub . LBS.unpack
+
 instance ToString LBS.ByteString where
     isAsciiString = LBS.all isAsciiChar
     toCharListUnsafe = toCharListUnsafe . LBS.unpack
@@ -302,6 +358,11 @@ instance StringSuperset LBS.ByteString where
     mapCharsUnsafe f = LBS.map (asCharUnsafe f)
 
 ---
+
+instance ToCaselessString BSB.Builder where
+    isAsciiCaselessString = isAsciiCaselessString . BSB.toLazyByteString
+    toCaselessCharListUnsafe = toCaselessCharListUnsafe . BSB.toLazyByteString
+    toCaselessCharListSub = toCaselessCharListSub . BSB.toLazyByteString
 
 instance ToString BSB.Builder where
     isAsciiString = isAsciiString . BSB.toLazyByteString
