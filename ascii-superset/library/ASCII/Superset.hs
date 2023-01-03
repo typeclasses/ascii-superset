@@ -40,24 +40,53 @@ import qualified Prelude
 
 ---  Char  ---
 
+{-| Partial conversion to 'CaselessChar'
+
+Generally this will be a superset of the ASCII character set with a 'ToChar'
+instance as well, and the conversion will be achieved by discarding the case of
+letters. A notable exception is the instance for the 'CaselessChar' type itself,
+which is already represented without case and does not have a 'ToChar' instance.
+-}
 class ToCaselessChar char where
 
+    -- | Test whether a character can be converted to 'CaselessChar'
     isAsciiCaselessChar :: char -> Bool
 
+    -- | Conversion to 'CaselessChar', defined only where 'isAsciiCaselessChar' is satisfied
     toCaselessCharUnsafe :: char -> CaselessChar
 
+{-| Partial conversion to 'ASCII.Char'
+
+This includes the 'ASCII.Char' type itself, character sets that are supersets
+of ASCII, and numeric types such as 'Word8' that are often used to represent
+ASCII characters. -}
 class ToCaselessChar char => ToChar char where
 
+    -- | Test whether a character can be converted to 'ASCII.Char'
     isAsciiChar :: char -> Bool
 
+    -- | Conversion to 'ASCII.Char', defined only where 'isAsciiChar' is satisfied
     toCharUnsafe :: char -> ASCII.Char
 
+{-| Total conversion from 'ASCII.Char'
+
+This class includes supersets of ASCII, in which case 'fromChar' is a lifting
+function. It also includes 'CaselessChar', in which case 'fromChar' discards
+case information. -}
 class FromChar char where
 
+    -- | Conversion from 'ASCII.Char'
     fromChar :: ASCII.Char -> char
 
+{- | Character type with:
+
+- a total conversion from ASCII; and
+- a partial conversion to ASCII -}
 class (ToChar char, FromChar char) => CharSuperset char
 
+{-| Manipulate a character as if it were an ASCII 'ASCII.Char', assuming that it is
+
+Defined only where 'isAsciiChar' is satisfied. -}
 asCharUnsafe :: CharSuperset char => (ASCII.Char -> ASCII.Char) -> char -> char
 asCharUnsafe f = fromChar . f . toCharUnsafe
 
@@ -81,14 +110,17 @@ toCharSub x = if isAsciiChar x then toCharUnsafe x else ASCII.Substitute
 toCaselessCharSub :: ToCaselessChar char => char -> CaselessChar
 toCaselessCharSub x = if isAsciiCaselessChar x then toCaselessCharUnsafe x else Caseless.Substitute
 
+{-| Force a character into ASCII by replacing it with 'ASCII.Substitute' if it
+    is not already an ASCII character
+
+The resulting character satisfies 'isAsciiChar' and 'isAsciiCaselessChar'. -}
 substituteChar :: CharSuperset char => char -> char
 substituteChar x = if isAsciiChar x then x else fromChar ASCII.Substitute
 
 {-| Convert from one ASCII-superset character type to another via the ASCII
 'ASCII.Char' type. Fails as 'Nothing' if the input is outside the ASCII
 character set. -}
-convertCharMaybe :: (ToChar char1, FromChar char2) =>
-    char1 -> Maybe char2
+convertCharMaybe :: (ToChar char1, FromChar char2) => char1 -> Maybe char2
 convertCharMaybe = convertCharOrFail
 
 {-| Convert from one ASCII-superset character type to another via the ASCII
@@ -101,28 +133,62 @@ convertCharOrFail = fmap fromChar . toCharOrFail
 
 ---  String  ---
 
+{-| Partial conversion to @['CaselessChar']@
+
+Generally this will be a superset of ASCII strings with a 'ToString' instance as
+well, and the conversion will be achieved by discarding the case of letters. A
+notable exception is the instance for @['CaselessChar']@ type itself, which is
+already represented without case and does not have a 'ToString' instance. -}
 class ToCaselessString string where
 
+    -- | Test whether a character can be converted to @['CaselessChar']@
     isAsciiCaselessString :: string -> Bool
 
+    {-| Conversion to @['CaselessChar']@, defined only where
+        'isAsciiCaselessString' is satisfied -}
     toCaselessCharListUnsafe :: string -> [CaselessChar]
 
+    {-| Conversion to @['CaselessChar']@ achieved by using
+        'Caseless.Substitute' in place of any non-ASCII characters -}
     toCaselessCharListSub :: string -> [CaselessChar]
 
+{-| Partial conversion to @['ASCII.Char']@
+
+This includes @['ASCII.Char']@ type itself, strings of character sets that are
+supersets of ASCII, and sequences of numeric types such as 'Word8' that are
+often used to represent ASCII characters. -}
 class ToCaselessString string => ToString string where
 
+    -- | Test whether a string can be converted to @['ASCII.Char']@
     isAsciiString :: string -> Bool
 
+    {-| Conversion to @['ASCII.Char']@, defined only where 'isAsciiString'
+        is satisfied -}
     toCharListUnsafe :: string -> [ASCII.Char]
 
+    {-| Conversion to @['ASCII.Char']@ achieved by using
+        'ASCII.Substitute' in place of any non-ASCII characters -}
     toCharListSub :: string -> [ASCII.Char]
 
+{-| Total conversion from @['ASCII.Char']@
+
+This class includes supersets of ASCII, in which case 'fromCharList' lifts each
+character into the larger character set. It also includes @['CaselessChar']@, in
+which case 'fromCharList' discards case information from letters. -}
 class FromString string where
 
+    -- | Conversion from @['ASCII.Char']@
     fromCharList :: [ASCII.Char] -> string
 
+{- | String type with:
+
+- a total conversion from ASCII; and
+- a partial conversion to ASCII -}
 class (ToString string, FromString string) => StringSuperset string where
 
+    {-| Force a string into ASCII by replacing any non-ASCII character with 'ASCII.Substitute'
+
+        The resulting string satisfies 'isAsciiString' and 'isAsciiCaselessString'. -}
     substituteString :: string -> string
 
     mapCharsUnsafe :: (ASCII.Char -> ASCII.Char) -> string -> string
