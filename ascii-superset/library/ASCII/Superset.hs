@@ -1,7 +1,7 @@
 module ASCII.Superset
   (
     {- * Characters -}
-    {- ** Class -} CharSuperset (..),
+    {- ** Class -} ToChar (..), FromChar (..), CharSuperset,
     {- ** Functions -} asCharUnsafe, toCharMaybe, toCharOrFail,
         toCharSub, substituteChar, convertCharMaybe, convertCharOrFail,
 
@@ -38,25 +38,26 @@ import qualified Prelude
 
 ---  Char  ---
 
-class CharSuperset char where
-
+class ToChar char where
     isAsciiChar :: char -> Bool
+    toCharUnsafe :: char -> ASCII.Char
 
+class FromChar char where
     fromChar :: ASCII.Char -> char
 
-    toCharUnsafe :: char -> ASCII.Char
+class (ToChar char, FromChar char) => CharSuperset char
 
 asCharUnsafe :: CharSuperset char => (ASCII.Char -> ASCII.Char) -> char -> char
 asCharUnsafe f = fromChar . f . toCharUnsafe
 
-toCharMaybe :: CharSuperset char => char -> Maybe ASCII.Char
+toCharMaybe :: ToChar char => char -> Maybe ASCII.Char
 toCharMaybe = toCharOrFail
 
-toCharOrFail :: (CharSuperset char, MonadFail context) => char -> context ASCII.Char
+toCharOrFail :: (ToChar char, MonadFail context) => char -> context ASCII.Char
 toCharOrFail x = if isAsciiChar x then return (toCharUnsafe x)
     else fail "Not an ASCII character"
 
-toCharSub :: CharSuperset char => char -> ASCII.Char
+toCharSub :: ToChar char => char -> ASCII.Char
 toCharSub x = if isAsciiChar x then toCharUnsafe x else ASCII.Substitute
 
 substituteChar :: CharSuperset char => char -> char
@@ -65,14 +66,14 @@ substituteChar x = if isAsciiChar x then x else fromChar ASCII.Substitute
 {-| Convert from one ASCII-superset character type to another via the ASCII
 'ASCII.Char' type. Fails as 'Nothing' if the input is outside the ASCII
 character set. -}
-convertCharMaybe :: (CharSuperset char1, CharSuperset char2) =>
+convertCharMaybe :: (ToChar char1, FromChar char2) =>
     char1 -> Maybe char2
 convertCharMaybe = convertCharOrFail
 
 {-| Convert from one ASCII-superset character type to another via the ASCII
 'ASCII.Char' type. Fails with 'fail' if the input is outside the ASCII character
 set. -}
-convertCharOrFail :: (CharSuperset char1, CharSuperset char2, MonadFail context) =>
+convertCharOrFail :: (ToChar char1, FromChar char2, MonadFail context) =>
     char1 -> context char2
 convertCharOrFail = fmap fromChar . toCharOrFail
 
@@ -121,31 +122,61 @@ convertStringOrFail = fmap fromCharList . toCharListOrFail
 
 ---  Instances  ---
 
--- | 'ASCII.Char' is trivially a superset of itself. (This instance is uninteresting.)
-instance CharSuperset ASCII.Char where
+instance ToChar ASCII.Char where
     isAsciiChar _ = Bool.True
-    fromChar = id
     toCharUnsafe = id
 
-instance CharSuperset Unicode.Char where
+instance FromChar ASCII.Char where
+    fromChar = id
+
+-- | 'ASCII.Char' is trivially a superset of itself. (This instance is uninteresting.)
+instance CharSuperset ASCII.Char
+
+---
+
+instance ToChar Unicode.Char where
     isAsciiChar = (<= '\DEL')
-    fromChar = Unicode.chr . ASCII.toInt
     toCharUnsafe = ASCII.fromIntUnsafe . Unicode.ord
 
-instance CharSuperset Nat.Natural where
+instance FromChar Unicode.Char where
+    fromChar = Unicode.chr . ASCII.toInt
+
+instance CharSuperset Unicode.Char
+
+---
+
+instance ToChar Nat.Natural where
     isAsciiChar = (<= 127)
-    fromChar = Prelude.fromIntegral . ASCII.toInt
     toCharUnsafe = ASCII.fromIntUnsafe . Prelude.fromIntegral
 
-instance CharSuperset Int.Int where
+instance FromChar Nat.Natural where
+    fromChar = Prelude.fromIntegral . ASCII.toInt
+
+instance CharSuperset Nat.Natural
+
+---
+
+instance ToChar Int.Int where
     isAsciiChar x = (x >= 0) && (x <= 127)
-    fromChar = ASCII.toInt
     toCharUnsafe = ASCII.fromIntUnsafe
 
-instance CharSuperset Word.Word8 where
+instance FromChar Int.Int where
+    fromChar = ASCII.toInt
+
+instance CharSuperset Int.Int
+
+---
+
+instance ToChar Word.Word8 where
     isAsciiChar = (<= 127)
-    fromChar = Prelude.fromIntegral . ASCII.toInt
     toCharUnsafe = ASCII.fromIntUnsafe . Prelude.fromIntegral
+
+instance FromChar Word.Word8 where
+    fromChar = Prelude.fromIntegral . ASCII.toInt
+
+instance CharSuperset Word.Word8
+
+---
 
 instance CharSuperset char => StringSuperset [char] where
     isAsciiString = List.all isAsciiChar

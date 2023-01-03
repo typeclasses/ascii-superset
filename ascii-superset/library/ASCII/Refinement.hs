@@ -10,7 +10,7 @@ import qualified ASCII.Char as ASCII
 import qualified ASCII.Isomorphism as I
 import qualified ASCII.Superset as S
 
-import ASCII.Superset (CharSuperset, StringSuperset)
+import ASCII.Superset (ToChar, FromChar, CharSuperset, StringSuperset)
 import Data.Bool (Bool (..))
 import Data.Data (Data)
 import Data.Eq (Eq)
@@ -55,10 +55,14 @@ instance Show superset => Show (ASCII superset) where
 
     showList x = showString "asciiUnsafe " . showList (map lift x)
 
-instance CharSuperset char => CharSuperset (ASCII char) where
+instance CharSuperset char => ToChar (ASCII char) where
     isAsciiChar _ = True
-    fromChar = asciiUnsafe . S.fromChar
     toCharUnsafe = S.toCharUnsafe . lift
+
+instance CharSuperset char => FromChar (ASCII char) where
+    fromChar = asciiUnsafe . S.fromChar
+
+instance CharSuperset char => CharSuperset (ASCII char)
 
 instance CharSuperset char => I.CharIso (ASCII char) where
     toChar = S.toCharUnsafe

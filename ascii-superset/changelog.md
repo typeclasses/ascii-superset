@@ -1,3 +1,8 @@
+### 1.1.0.0
+
+Add classes `ToChar` and `FromChar`, of which `CharSuperset` is now a subclass
+with no methods of its own.
+
 ### 1.0.2.0 (2023-01-02)
 
 Add module `ASCII.CaseRefinement`

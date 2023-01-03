@@ -1,7 +1,7 @@
 module ASCII.Isomorphism (CharIso (..), asChar, StringIso (..)) where
 
 import ASCII.Char (Char)
-import ASCII.Superset (CharSuperset (..), StringSuperset (..))
+import ASCII.Superset (CharSuperset, StringSuperset, fromChar)
 import Data.Function (id, (.))
 import Data.List (map)
 
