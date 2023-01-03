@@ -247,14 +247,14 @@ instance CharSuperset Word.Word8
 ---
 
 instance ToCaselessChar char => ToCaselessString [char] where
-    isAsciiCaselessString = List.all isAsciiCaselessChar
+    isAsciiCaselessString    = List.all isAsciiCaselessChar
     toCaselessCharListUnsafe = List.map toCaselessCharUnsafe
-    toCaselessCharListSub = List.map toCaselessCharSub
+    toCaselessCharListSub    = List.map toCaselessCharSub
 
 instance ToChar char => ToString [char] where
-    isAsciiString = List.all isAsciiChar
+    isAsciiString    = List.all isAsciiChar
     toCharListUnsafe = List.map toCharUnsafe
-    toCharListSub = List.map toCharSub
+    toCharListSub    = List.map toCharSub
 
 instance FromChar char => FromString [char] where
     fromCharList = List.map fromChar
@@ -267,7 +267,7 @@ instance CharSuperset char => StringSuperset [char] where
 instance ToCaselessString T.Text where
     isAsciiCaselessString = T.all isAsciiChar
     toCaselessCharListUnsafe = toCaselessCharListUnsafe . T.unpack
-    toCaselessCharListSub = toCaselessCharListSub . T.unpack
+    toCaselessCharListSub    = toCaselessCharListSub    . T.unpack
 
 instance ToString T.Text where
     isAsciiString = T.all isAsciiChar
@@ -286,12 +286,12 @@ instance StringSuperset T.Text where
 instance ToCaselessString LT.Text where
     isAsciiCaselessString = LT.all isAsciiChar
     toCaselessCharListUnsafe = toCaselessCharListUnsafe . LT.unpack
-    toCaselessCharListSub = toCaselessCharListSub . LT.unpack
+    toCaselessCharListSub    = toCaselessCharListSub    . LT.unpack
 
 instance ToString LT.Text where
     isAsciiString = LT.all isAsciiChar
     toCharListUnsafe = toCharListUnsafe . LT.unpack
-    toCharListSub = toCharListSub . LT.unpack
+    toCharListSub    = toCharListSub    . LT.unpack
 
 instance FromString LT.Text where
     fromCharList = LT.pack . fromCharList
@@ -303,14 +303,14 @@ instance StringSuperset LT.Text where
 ---
 
 instance ToCaselessString TB.Builder where
-    isAsciiCaselessString = isAsciiCaselessString . TB.toLazyText
+    isAsciiCaselessString    = isAsciiCaselessString    . TB.toLazyText
     toCaselessCharListUnsafe = toCaselessCharListUnsafe . TB.toLazyText
-    toCaselessCharListSub = toCaselessCharListSub . TB.toLazyText
+    toCaselessCharListSub    = toCaselessCharListSub    . TB.toLazyText
 
 instance ToString TB.Builder where
-    isAsciiString = isAsciiString . TB.toLazyText
+    isAsciiString    = isAsciiString    . TB.toLazyText
     toCharListUnsafe = toCharListUnsafe . TB.toLazyText
-    toCharListSub = toCharListSub . TB.toLazyText
+    toCharListSub    = toCharListSub    . TB.toLazyText
 
 instance FromString TB.Builder where
     fromCharList = TB.fromString . fromCharList
@@ -324,12 +324,12 @@ instance StringSuperset TB.Builder where
 instance ToCaselessString BS.ByteString where
     isAsciiCaselessString = BS.all isAsciiCaselessChar
     toCaselessCharListUnsafe = toCaselessCharListUnsafe . BS.unpack
-    toCaselessCharListSub = toCaselessCharListSub . BS.unpack
+    toCaselessCharListSub    = toCaselessCharListSub    . BS.unpack
 
 instance ToString BS.ByteString where
     isAsciiString = BS.all isAsciiChar
     toCharListUnsafe = toCharListUnsafe . BS.unpack
-    toCharListSub = toCharListSub . BS.unpack
+    toCharListSub    = toCharListSub    . BS.unpack
 
 instance FromString BS.ByteString where
     fromCharList = BS.pack . fromCharList
@@ -343,12 +343,12 @@ instance StringSuperset BS.ByteString where
 instance ToCaselessString LBS.ByteString where
     isAsciiCaselessString = LBS.all isAsciiCaselessChar
     toCaselessCharListUnsafe = toCaselessCharListUnsafe . LBS.unpack
-    toCaselessCharListSub = toCaselessCharListSub . LBS.unpack
+    toCaselessCharListSub    = toCaselessCharListSub    . LBS.unpack
 
 instance ToString LBS.ByteString where
     isAsciiString = LBS.all isAsciiChar
     toCharListUnsafe = toCharListUnsafe . LBS.unpack
-    toCharListSub = toCharListSub . LBS.unpack
+    toCharListSub    = toCharListSub    . LBS.unpack
 
 instance FromString LBS.ByteString where
     fromCharList = LBS.pack . fromCharList
@@ -360,14 +360,14 @@ instance StringSuperset LBS.ByteString where
 ---
 
 instance ToCaselessString BSB.Builder where
-    isAsciiCaselessString = isAsciiCaselessString . BSB.toLazyByteString
+    isAsciiCaselessString    = isAsciiCaselessString    . BSB.toLazyByteString
     toCaselessCharListUnsafe = toCaselessCharListUnsafe . BSB.toLazyByteString
-    toCaselessCharListSub = toCaselessCharListSub . BSB.toLazyByteString
+    toCaselessCharListSub    = toCaselessCharListSub    . BSB.toLazyByteString
 
 instance ToString BSB.Builder where
-    isAsciiString = isAsciiString . BSB.toLazyByteString
+    isAsciiString    = isAsciiString    . BSB.toLazyByteString
     toCharListUnsafe = toCharListUnsafe . BSB.toLazyByteString
-    toCharListSub = toCharListSub . BSB.toLazyByteString
+    toCharListSub    = toCharListSub    . BSB.toLazyByteString
 
 instance FromString BSB.Builder where
     fromCharList = BSB.lazyByteString . fromCharList
