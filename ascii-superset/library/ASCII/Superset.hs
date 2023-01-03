@@ -1,7 +1,7 @@
 module ASCII.Superset
   (
     {- * Characters -}
-    {- ** Class -} ToChar (..), FromChar (..), CharSuperset,
+    {- ** Class -} ToCaselessChar (..), ToChar (..), FromChar (..), CharSuperset,
     {- ** Functions -} asCharUnsafe, toCharMaybe, toCharOrFail,
         toCharSub, substituteChar, convertCharMaybe, convertCharOrFail,
 
@@ -12,6 +12,7 @@ module ASCII.Superset
   )
   where
 
+import ASCII.Caseless (CaselessChar)
 import Control.Monad (return)
 import Control.Monad.Fail (MonadFail (fail))
 import Data.Bool (Bool, (&&))
@@ -20,6 +21,7 @@ import Data.Functor (fmap)
 import Data.Maybe (Maybe (..))
 import Data.Ord ((<=), (>=))
 
+import qualified ASCII.Caseless as Caseless
 import qualified ASCII.Char as ASCII
 import qualified Data.Bool as Bool
 import qualified Data.ByteString as BS
@@ -38,7 +40,13 @@ import qualified Prelude
 
 ---  Char  ---
 
-class ToChar char where
+class ToCaselessChar char where
+
+    isAsciiCaselessChar :: char -> Bool
+
+    toCaselessCharUnsafe :: char -> CaselessChar
+
+class ToCaselessChar char => ToChar char where
 
     isAsciiChar :: char -> Bool
 
@@ -129,6 +137,17 @@ convertStringOrFail = fmap fromCharList . toCharListOrFail
 
 ---  Instances  ---
 
+-- | 'CaselessChar' is trivially convertible to itself. (This instance is uninteresting.)
+instance ToCaselessChar CaselessChar where
+    isAsciiCaselessChar _ = Bool.True
+    toCaselessCharUnsafe = id
+
+---
+
+instance ToCaselessChar ASCII.Char where
+    isAsciiCaselessChar _ = Bool.True
+    toCaselessCharUnsafe = Caseless.disregardCase
+
 instance ToChar ASCII.Char where
     isAsciiChar _ = Bool.True
     toCharUnsafe = id
@@ -141,9 +160,13 @@ instance CharSuperset ASCII.Char
 
 ---
 
+instance ToCaselessChar Unicode.Char where
+    isAsciiCaselessChar = isAsciiChar
+    toCaselessCharUnsafe = toCaselessCharUnsafe . toCharUnsafe
+
 instance ToChar Unicode.Char where
     isAsciiChar = (<= '\DEL')
-    toCharUnsafe = ASCII.fromIntUnsafe . Unicode.ord
+    toCharUnsafe = toCharUnsafe @Int.Int . Unicode.ord
 
 instance FromChar Unicode.Char where
     fromChar = Unicode.chr . ASCII.toInt
@@ -152,9 +175,13 @@ instance CharSuperset Unicode.Char
 
 ---
 
+instance ToCaselessChar Nat.Natural where
+    isAsciiCaselessChar = isAsciiChar
+    toCaselessCharUnsafe = toCaselessCharUnsafe . toCharUnsafe
+
 instance ToChar Nat.Natural where
     isAsciiChar = (<= 127)
-    toCharUnsafe = ASCII.fromIntUnsafe . Prelude.fromIntegral
+    toCharUnsafe = toCharUnsafe @Int.Int . Prelude.fromIntegral
 
 instance FromChar Nat.Natural where
     fromChar = Prelude.fromIntegral . ASCII.toInt
@@ -162,6 +189,10 @@ instance FromChar Nat.Natural where
 instance CharSuperset Nat.Natural
 
 ---
+
+instance ToCaselessChar Int.Int where
+    isAsciiCaselessChar = isAsciiChar
+    toCaselessCharUnsafe = toCaselessCharUnsafe . toCharUnsafe
 
 instance ToChar Int.Int where
     isAsciiChar x = (x >= 0) && (x <= 127)
@@ -173,6 +204,10 @@ instance FromChar Int.Int where
 instance CharSuperset Int.Int
 
 ---
+
+instance ToCaselessChar Word.Word8 where
+    isAsciiCaselessChar = isAsciiChar
+    toCaselessCharUnsafe = toCaselessCharUnsafe . toCharUnsafe
 
 instance ToChar Word.Word8 where
     isAsciiChar = (<= 127)

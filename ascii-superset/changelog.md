@@ -8,6 +8,9 @@ Add classes `ToString` (`isAsciiString`, `toCharListUnsafe`, `toCharListSub`)
 and `FromString` (`fromCharList`), of which `StringSuperset` is now a subclass
 which still has some methods (`substituteString`, `mapCharsUnsafe`).
 
+Add class `ToCaselessChar` (`isAsciiCaselessChar`, `toCaselessCharUnsafe`),
+which is a superclass of `ToChar`.
+
 ### 1.0.2.0 (2023-01-02)
 
 Add module `ASCII.CaseRefinement`

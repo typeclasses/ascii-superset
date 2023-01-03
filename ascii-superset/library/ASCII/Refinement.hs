@@ -10,8 +10,6 @@ import qualified ASCII.Char as ASCII
 import qualified ASCII.Isomorphism as I
 import qualified ASCII.Superset as S
 
-import ASCII.Superset (ToChar, FromChar, CharSuperset, ToString, FromString, StringSuperset)
-import Data.Bool (Bool (..))
 import Data.Data (Data)
 import Data.Eq (Eq)
 import Data.Function (id, ($), (.))
@@ -23,7 +21,9 @@ import Data.Ord (Ord, (>))
 import Data.Semigroup (Semigroup)
 import GHC.Generics (Generic)
 import Prelude (succ)
-import Text.Show (Show, showList, showParen, showString, showsPrec)
+
+import qualified Data.Bool as Bool
+import qualified Text.Show as Show
 
 {-| This type constructor indicates that a value from some ASCII superset is
 valid ASCII. The type parameter is the ASCII superset, which should be a type
@@ -48,37 +48,41 @@ deriving stock instance Data superset => Data (ASCII superset)
 
 deriving stock instance Generic (ASCII superset)
 
-instance Show superset => Show (ASCII superset) where
-    showsPrec d x = showParen (d > app_prec) $
-        showString "asciiUnsafe " . showsPrec (succ app_prec) (lift x)
+instance Show.Show superset => Show.Show (ASCII superset) where
+    showsPrec d x = Show.showParen (d > app_prec) $
+        Show.showString "asciiUnsafe " . Show.showsPrec (succ app_prec) (lift x)
       where app_prec = 10
 
-    showList x = showString "asciiUnsafe " . showList (map lift x)
+    showList x = Show.showString "asciiUnsafe " . Show.showList (map lift x)
 
-instance CharSuperset char => ToChar (ASCII char) where
-    isAsciiChar _ = True
+instance S.ToCaselessChar char => S.ToCaselessChar (ASCII char) where
+    isAsciiCaselessChar _ = Bool.True
+    toCaselessCharUnsafe = S.toCaselessCharUnsafe . lift
+
+instance S.CharSuperset char => S.ToChar (ASCII char) where
+    isAsciiChar _ = Bool.True
     toCharUnsafe = S.toCharUnsafe . lift
 
-instance CharSuperset char => FromChar (ASCII char) where
+instance S.CharSuperset char => S.FromChar (ASCII char) where
     fromChar = asciiUnsafe . S.fromChar
 
-instance CharSuperset char => CharSuperset (ASCII char)
+instance S.CharSuperset char => S.CharSuperset (ASCII char)
 
-instance CharSuperset char => I.CharIso (ASCII char) where
+instance S.CharSuperset char => I.CharIso (ASCII char) where
     toChar = S.toCharUnsafe
 
-instance ToString string => ToString (ASCII string) where
-    isAsciiString _ = True
+instance S.ToString string => S.ToString (ASCII string) where
+    isAsciiString _ = Bool.True
     toCharListUnsafe = S.toCharListUnsafe . lift
     toCharListSub = S.toCharListUnsafe . lift
 
-instance FromString string => FromString (ASCII string) where
+instance S.FromString string => S.FromString (ASCII string) where
     fromCharList = asciiUnsafe . S.fromCharList
 
-instance StringSuperset string => StringSuperset (ASCII string) where
+instance S.StringSuperset string => S.StringSuperset (ASCII string) where
     substituteString = id
 
-instance StringSuperset string => I.StringIso (ASCII string) where
+instance S.StringSuperset string => I.StringIso (ASCII string) where
     toCharList = S.toCharListUnsafe
     mapChars = S.mapCharsUnsafe
 
@@ -93,30 +97,30 @@ asciiUnsafe = ASCII_Unsafe
 >>> map validateChar [-1, 65, 97, 128] :: [Maybe (ASCII Int)]
 [Nothing,Just (asciiUnsafe 65),Just (asciiUnsafe 97),Nothing]
 -}
-validateChar :: CharSuperset superset => superset -> Maybe (ASCII superset)
+validateChar :: S.CharSuperset superset => superset -> Maybe (ASCII superset)
 validateChar x = if S.isAsciiChar x then Just (asciiUnsafe x) else Nothing
 
-substituteChar :: CharSuperset superset => superset -> ASCII superset
+substituteChar :: S.CharSuperset superset => superset -> ASCII superset
 substituteChar x = if S.isAsciiChar x then asciiUnsafe x else fromChar ASCII.Substitute
 
-fromChar :: CharSuperset superset => ASCII.Char -> ASCII superset
+fromChar :: S.CharSuperset superset => ASCII.Char -> ASCII superset
 fromChar = asciiUnsafe . S.fromChar
 
-toChar :: CharSuperset superset => ASCII superset -> ASCII.Char
+toChar :: S.CharSuperset superset => ASCII superset -> ASCII.Char
 toChar = S.toCharUnsafe . lift
 
 {-|
 >>> fromCharList [CapitalLetterH,SmallLetterI,ExclamationMark] :: ASCII Text
 asciiUnsafe "Hi!"
 -}
-fromCharList :: StringSuperset superset => [ASCII.Char] -> ASCII superset
+fromCharList :: S.StringSuperset superset => [ASCII.Char] -> ASCII superset
 fromCharList = asciiUnsafe . S.fromCharList
 
 {-|
 >>> toCharList (substituteString "Piñata" :: ASCII Text)
 [CapitalLetterP,SmallLetterI,Substitute,SmallLetterA,SmallLetterT,SmallLetterA]
 -}
-toCharList :: StringSuperset superset => ASCII superset -> [ASCII.Char]
+toCharList :: S.StringSuperset superset => ASCII superset -> [ASCII.Char]
 toCharList = S.toCharListUnsafe . lift
 
 {-| Forces a string from a larger character set into ASCII by using the
@@ -125,7 +129,7 @@ toCharList = S.toCharListUnsafe . lift
 >>> substituteString "Cristóbal" :: ASCII Text
 asciiUnsafe "Crist\SUBbal"
 -}
-substituteString :: StringSuperset superset => superset -> ASCII superset
+substituteString :: S.StringSuperset superset => superset -> ASCII superset
 substituteString = asciiUnsafe . S.substituteString
 
 {-|
@@ -135,11 +139,11 @@ substituteString = asciiUnsafe . S.substituteString
 >>> map validateString ["Hello", "Cristóbal"] :: [Maybe (ASCII String)]
 [Just (asciiUnsafe "Hello"),Nothing]
 -}
-validateString :: StringSuperset superset => superset -> Maybe (ASCII superset)
+validateString :: S.StringSuperset superset => superset -> Maybe (ASCII superset)
 validateString x = if S.isAsciiString x then Just (asciiUnsafe x) else Nothing
 
-asChar :: CharSuperset superset => (ASCII.Char -> ASCII.Char) -> ASCII superset -> ASCII superset
+asChar :: S.CharSuperset superset => (ASCII.Char -> ASCII.Char) -> ASCII superset -> ASCII superset
 asChar f = asciiUnsafe . S.asCharUnsafe f . lift
 
-mapChars :: StringSuperset superset => (ASCII.Char -> ASCII.Char) -> ASCII superset -> ASCII superset
+mapChars :: S.StringSuperset superset => (ASCII.Char -> ASCII.Char) -> ASCII superset -> ASCII superset
 mapChars f = asciiUnsafe . S.mapCharsUnsafe f . lift
