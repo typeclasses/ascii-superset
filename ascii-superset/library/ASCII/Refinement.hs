@@ -66,7 +66,8 @@ instance S.CharSuperset char => S.ToChar (ASCII char) where
 instance S.CharSuperset char => S.FromChar (ASCII char) where
     fromChar = asciiUnsafe . S.fromChar
 
-instance S.CharSuperset char => S.CharSuperset (ASCII char)
+instance S.CharSuperset char => S.CharSuperset (ASCII char) where
+    toCaseChar c = asciiUnsafe . S.toCaseChar c . lift
 
 instance S.CharSuperset char => I.CharIso (ASCII char) where
     toChar = S.toCharUnsafe

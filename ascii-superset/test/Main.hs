@@ -2,19 +2,28 @@ module Main (main) where
 
 import Test.Hspec
 
-import ASCII.Refinement (ASCII, asciiUnsafe)
+import ASCII.Case (Case (..))
 import ASCII.CaseRefinement (ASCII'lower, ASCII'upper, asciiCaseUnsafe)
+import ASCII.Char (Char (..))
+import ASCII.Refinement (ASCII, asciiUnsafe)
 
+import qualified ASCII.Case as Case
+import qualified ASCII.Caseless as CC
 import qualified ASCII.CaseRefinement as CaseRefinement
+import qualified ASCII.Char as ASCII
 import qualified ASCII.Lift as Lift
 import qualified ASCII.Refinement as Refinement
+import qualified ASCII.Superset as Superset
 
-import ASCII.Char (Char (..))
-import qualified ASCII.Caseless as CC
+import qualified Data.Foldable as Foldable
 
+import Data.Function ((&))
 import Data.Text (Text)
 import Data.Word (Word8)
+import Numeric.Natural (Natural)
 import Prelude
+
+import qualified Data.Char as Unicode
 
 main :: IO ()
 main = hspec $ do
@@ -116,3 +125,17 @@ main = hspec $ do
                 let f x = CaseRefinement.validateString x :: Maybe (ASCII'upper Text)
                 f "HELLO" `shouldBe` Just (asciiCaseUnsafe "HELLO")
                 f "Hello" `shouldBe` Nothing
+
+    describe "toCaseChar" $ do
+        let check :: forall a. Eq a => Superset.CharSuperset a => Expectation
+            check =
+                ([UpperCase, LowerCase] & Foldable.all (\c ->
+                    ASCII.allCharacters & Foldable.all (\x ->
+                        Superset.toCaseChar c (Superset.fromChar @a x)
+                            == Superset.fromChar @a (Case.toCase c x)
+                ))) `shouldBe` True
+        it "ASCII.Char" $ check @ASCII.Char
+        it "Unicode.Char" $ check @Unicode.Char
+        it "Natural" $ check @Natural
+        it "Int" $ check @Int
+        it "Word8" $ check @Word8

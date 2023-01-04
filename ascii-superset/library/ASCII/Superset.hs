@@ -1,7 +1,7 @@
 module ASCII.Superset
   (
     {- * Characters -}
-    {- ** Class -} ToCaselessChar (..), ToChar (..), FromChar (..), CharSuperset,
+    {- ** Class -} ToCaselessChar (..), ToChar (..), FromChar (..), CharSuperset (..),
     {- ** Functions -} asCharUnsafe, toCharMaybe, toCaselessCharMaybe, toCharOrFail, toCaselessCharOrFail,
         toCharSub, toCaselessCharSub, substituteChar, convertCharMaybe, convertCharOrFail,
 
@@ -12,6 +12,7 @@ module ASCII.Superset
   )
   where
 
+import ASCII.Case (Case (..))
 import ASCII.Caseless (CaselessChar)
 import Control.Monad (return)
 import Control.Monad.Fail (MonadFail (fail))
@@ -20,7 +21,9 @@ import Data.Function (id, (.))
 import Data.Functor (fmap)
 import Data.Maybe (Maybe (..))
 import Data.Ord ((<=), (>=))
+import Prelude ((+), (-))
 
+import qualified ASCII.Case as Case
 import qualified ASCII.Caseless as Caseless
 import qualified ASCII.Char as ASCII
 import qualified Data.Bool as Bool
@@ -82,7 +85,12 @@ class FromChar char where
 
 - a total conversion from ASCII; and
 - a partial conversion to ASCII -}
-class (ToChar char, FromChar char) => CharSuperset char
+class (ToChar char, FromChar char) => CharSuperset char where
+
+    {- | Convert a character in the superset to the designated case,
+    if it is an ASCII letter of the opposite case. Otherwise, return
+    the argument unmodified. -}
+    toCaseChar :: Case -> char -> char
 
 {-| Manipulate a character as if it were an ASCII 'ASCII.Char', assuming that it is
 
@@ -229,7 +237,7 @@ convertStringOrFail = fmap fromCharList . toCharListOrFail
 
 ---  Instances  ---
 
--- | 'CaselessChar' is trivially convertible to itself. (This instance is uninteresting.)
+-- | 'CaselessChar' is trivially convertible to itself.
 instance ToCaselessChar CaselessChar where
     isAsciiCaselessChar _ = Bool.True
     toCaselessCharUnsafe = id
@@ -247,8 +255,9 @@ instance ToChar ASCII.Char where
 instance FromChar ASCII.Char where
     fromChar = id
 
--- | 'ASCII.Char' is trivially a superset of itself. (This instance is uninteresting.)
-instance CharSuperset ASCII.Char
+-- | 'ASCII.Char' is trivially a superset of itself.
+instance CharSuperset ASCII.Char where
+    toCaseChar = Case.toCase
 
 ---
 
@@ -263,7 +272,10 @@ instance ToChar Unicode.Char where
 instance FromChar Unicode.Char where
     fromChar = Unicode.chr . ASCII.toInt
 
-instance CharSuperset Unicode.Char
+instance CharSuperset Unicode.Char where
+    toCaseChar UpperCase x | x >= 'a' && x <= 'z' = Unicode.chr (Unicode.ord x - 32)
+    toCaseChar LowerCase x | x >= 'A' && x <= 'Z' = Unicode.chr (Unicode.ord x + 32)
+    toCaseChar _ x = x
 
 ---
 
@@ -278,7 +290,10 @@ instance ToChar Nat.Natural where
 instance FromChar Nat.Natural where
     fromChar = Prelude.fromIntegral . ASCII.toInt
 
-instance CharSuperset Nat.Natural
+instance CharSuperset Nat.Natural where
+    toCaseChar UpperCase x | x >= 97 && x <= 122 = x - 32
+    toCaseChar LowerCase x | x >= 65 && x <= 90  = x + 32
+    toCaseChar _ x = x
 
 ---
 
@@ -293,7 +308,10 @@ instance ToChar Int.Int where
 instance FromChar Int.Int where
     fromChar = ASCII.toInt
 
-instance CharSuperset Int.Int
+instance CharSuperset Int.Int where
+    toCaseChar UpperCase x | x >= 97 && x <= 122 = x - 32
+    toCaseChar LowerCase x | x >= 65 && x <= 90  = x + 32
+    toCaseChar _ x = x
 
 ---
 
@@ -308,7 +326,10 @@ instance ToChar Word.Word8 where
 instance FromChar Word.Word8 where
     fromChar = Prelude.fromIntegral . ASCII.toInt
 
-instance CharSuperset Word.Word8
+instance CharSuperset Word.Word8 where
+    toCaseChar UpperCase x | x >= 97 && x <= 122 = x - 32
+    toCaseChar LowerCase x | x >= 65 && x <= 90  = x + 32
+    toCaseChar _ x = x
 
 ---
 

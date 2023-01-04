@@ -1,3 +1,9 @@
+### 1.2.0.0 (2023-01-03)
+
+Add to the `CharSuperset` class a new method:
+
+- `toCaseChar :: Case -> char -> char`
+
 ### 1.1.1.0 (2023-01-03)
 
 Add to `ASCII.CaseRefinement` the `KnownCase` class.
