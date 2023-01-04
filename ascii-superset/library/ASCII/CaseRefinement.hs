@@ -145,7 +145,7 @@ toCaselessChar :: CharSuperset superset =>
     ASCII'case letterCase superset {- ^ Character that is known to be ASCII, and
                                         in the particular case if it is a letter -}
     -> CaselessChar
-toCaselessChar =  Caseless.disregardCase . Superset.toCharUnsafe . lift
+toCaselessChar = Caseless.disregardCase . Superset.toCharUnsafe . lift
 
 {-| Given a character from a larger set that is known to represent an ASCII
 character, manipulate it as if it were an ASCII character -}
