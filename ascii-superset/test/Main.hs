@@ -126,16 +126,24 @@ main = hspec $ do
                 f "HELLO" `shouldBe` Just (asciiCaseUnsafe "HELLO")
                 f "Hello" `shouldBe` Nothing
 
-    describe "toCaseChar" $ do
-        let check :: forall a. Eq a => Superset.CharSuperset a => Expectation
-            check =
-                ([UpperCase, LowerCase] & Foldable.all (\c ->
-                    ASCII.allCharacters & Foldable.all (\x ->
-                        Superset.toCaseChar c (Superset.fromChar @a x)
-                            == Superset.fromChar @a (Case.toCase c x)
-                ))) `shouldBe` True
-        it "ASCII.Char" $ check @ASCII.Char
-        it "Unicode.Char" $ check @Unicode.Char
-        it "Natural" $ check @Natural
-        it "Int" $ check @Int
-        it "Word8" $ check @Word8
+    describe "case conversion" $ do
+
+        describe "toCaseChar" $ do
+            let check :: forall a. Eq a => Superset.CharSuperset a => Expectation
+                check =
+                    ([UpperCase, LowerCase] & Foldable.all (\c ->
+                        ASCII.allCharacters & Foldable.all (\x ->
+                            Superset.toCaseChar c (Superset.fromChar @a x)
+                                == Superset.fromChar @a (Case.toCase c x)
+                    ))) `shouldBe` True
+            it "ASCII.Char" $ check @ASCII.Char
+            it "Unicode.Char" $ check @Unicode.Char
+            it "Natural" $ check @Natural
+            it "Int" $ check @Int
+            it "Word8" $ check @Word8
+
+        describe "toCaseString" $ do
+            it "Text" $ do
+                let x = "012 abc DEF ﬓ" :: Text
+                Superset.toCaseString UpperCase x `shouldBe` "012 ABC DEF ﬓ"
+                Superset.toCaseString LowerCase x `shouldBe` "012 abc def ﬓ"

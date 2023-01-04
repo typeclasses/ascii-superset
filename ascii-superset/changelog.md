@@ -1,8 +1,12 @@
-### 1.2.0.0 (2023-01-03)
+### 1.2.0.0
 
 Add to the `CharSuperset` class a new method:
 
 - `toCaseChar :: Case -> char -> char`
+
+Add to the `StringSuperset` class a new method:
+
+- `toCaseString :: Case -> string -> string`
 
 ### 1.1.1.0 (2023-01-03)
 

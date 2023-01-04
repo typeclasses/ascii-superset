@@ -202,6 +202,10 @@ class (ToString string, FromString string) => StringSuperset string where
     mapCharsUnsafe :: (ASCII.Char -> ASCII.Char) -> string -> string
     mapCharsUnsafe f = fromCharList  . List.map f . toCharListUnsafe
 
+    {- | Convert each character in the superset to the designated case, if it is
+    an ASCII letter of the opposite case. Leaves other characters unchanged. -}
+    toCaseString :: Case -> string -> string
+
 toCharListMaybe :: ToString string => string -> Maybe [ASCII.Char]
 toCharListMaybe = toCharListOrFail
 
@@ -348,6 +352,7 @@ instance FromChar char => FromString [char] where
 
 instance CharSuperset char => StringSuperset [char] where
     substituteString = List.map substituteChar
+    toCaseString c = List.map (toCaseChar c)
 
 ---
 
@@ -367,6 +372,7 @@ instance FromString T.Text where
 instance StringSuperset T.Text where
     substituteString = T.map substituteChar
     mapCharsUnsafe f = T.map (asCharUnsafe f)
+    toCaseString c   = T.map (toCaseChar c)
 
 ---
 
@@ -386,6 +392,7 @@ instance FromString LT.Text where
 instance StringSuperset LT.Text where
     substituteString = LT.map substituteChar
     mapCharsUnsafe f = LT.map (asCharUnsafe f)
+    toCaseString c   = LT.map (toCaseChar c)
 
 ---
 
@@ -405,6 +412,7 @@ instance FromString TB.Builder where
 instance StringSuperset TB.Builder where
     substituteString = TB.fromLazyText . substituteString . TB.toLazyText
     mapCharsUnsafe f = TB.fromLazyText . mapCharsUnsafe f . TB.toLazyText
+    toCaseString c   = TB.fromLazyText . toCaseString c   . TB.toLazyText
 
 ---
 
@@ -424,6 +432,7 @@ instance FromString BS.ByteString where
 instance StringSuperset BS.ByteString where
     substituteString = BS.map substituteChar
     mapCharsUnsafe f = BS.map (asCharUnsafe f)
+    toCaseString c   = BS.map (toCaseChar c)
 
 ---
 
@@ -443,6 +452,7 @@ instance FromString LBS.ByteString where
 instance StringSuperset LBS.ByteString where
     substituteString = LBS.map substituteChar
     mapCharsUnsafe f = LBS.map (asCharUnsafe f)
+    toCaseString c   = LBS.map (toCaseChar c)
 
 ---
 
@@ -462,3 +472,4 @@ instance FromString BSB.Builder where
 instance StringSuperset BSB.Builder where
     substituteString = BSB.lazyByteString . substituteString . BSB.toLazyByteString
     mapCharsUnsafe f = BSB.lazyByteString . mapCharsUnsafe f . BSB.toLazyByteString
+    toCaseString c   = BSB.lazyByteString . toCaseString c   . BSB.toLazyByteString

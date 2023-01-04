@@ -87,6 +87,7 @@ instance S.FromString string => S.FromString (ASCII string) where
 
 instance S.StringSuperset string => S.StringSuperset (ASCII string) where
     substituteString = id
+    toCaseString c = asciiUnsafe . S.toCaseString c . lift
 
 instance S.StringSuperset string => I.StringIso (ASCII string) where
     toCharList = S.toCharListUnsafe
