@@ -1,4 +1,4 @@
-### 1.2.0.0
+### 1.2.0.0 (2023-01-03)
 
 Add to the `CharSuperset` class a new method:
 
