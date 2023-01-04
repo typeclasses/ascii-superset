@@ -1,4 +1,8 @@
-### 1.1.0.0
+### 1.1.1.0 (2023-01-03)
+
+Add to `ASCII.CaseRefinement` the `KnownCase` class.
+
+### 1.1.0.0 (2023-01-03)
 
 Add classes `ToChar` (`isAsciiChar`, `toCharUnsafe`) and `FromChar`
 (`fromChar`), of which `CharSuperset` is now a subclass with no methods of its

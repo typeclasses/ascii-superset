@@ -6,6 +6,7 @@ module ASCII.CaseRefinement
           toCaselessChar, substituteChar, asCaselessChar,
     {- * String functions -} validateString, fromCaselessCharList,
           toCaselessCharList, substituteString, mapChars,
+    {- * KnownCase -} KnownCase (..),
   )
   where
 
