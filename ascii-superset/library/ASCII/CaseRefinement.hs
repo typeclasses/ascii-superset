@@ -3,21 +3,23 @@ module ASCII.CaseRefinement
     {- * ASCII'case type constructor -} ASCII'case, lift, asciiCaseUnsafe,
     {- ** Aliases -} {- $aliases -} ASCII'upper, ASCII'lower,
     {- * Character functions -} validateChar, fromCaselessChar,
-          toCaselessChar, substituteChar, asCaselessChar,
+          toCaselessChar, substituteChar, asCaselessChar, refineCharToCase,
     {- * String functions -} validateString, fromCaselessCharList,
-          toCaselessCharList, substituteString, mapChars,
+          toCaselessCharList, substituteString, mapChars, refineStringToCase,
     {- * KnownCase -} KnownCase (..),
   )
   where
 
 import ASCII.Case (Case (..))
 import ASCII.Caseless (CaselessChar)
+import {-# source #-} ASCII.Refinement (ASCII)
 import ASCII.Superset (CharSuperset, StringSuperset)
 
 import qualified ASCII.Case as Case
 import qualified ASCII.Caseless as Caseless
 import qualified ASCII.Char as ASCII
 import qualified ASCII.Superset as Superset
+import {-# source #-} qualified ASCII.Refinement as Refinement
 
 import Control.Monad (guard)
 import Data.Bool (Bool (..))
@@ -158,6 +160,12 @@ asCaselessChar f = asciiCaseUnsafe . Superset.asCharUnsafe g . lift
   where
     g = Caseless.toCase (theCase @letterCase) . f . Caseless.assumeCaseUnsafe (theCase @letterCase)
 
+{-| Given an ASCII superset character that is known to be valid ASCII,
+refine it further by converting it to a particular letter case -}
+refineCharToCase :: forall letterCase char. KnownCase letterCase => CharSuperset char =>
+    ASCII char -> ASCII'case letterCase char
+refineCharToCase = asciiCaseUnsafe . Superset.toCaseChar (theCase @letterCase) . Refinement.lift
+
 ---
 
 {-| Return 'Just' an 'ASCII'case' string if the input consists entirely of ASCII
@@ -206,3 +214,9 @@ mapChars :: forall letterCase superset. KnownCase letterCase => StringSuperset s
 mapChars f = asciiCaseUnsafe . Superset.mapCharsUnsafe g . lift
   where
     g = Caseless.toCase (theCase @letterCase) . f . Caseless.assumeCaseUnsafe (theCase @letterCase)
+
+{-| Given an ASCII superset string that is known to be valid ASCII,
+refine it further by converting it to a particular letter case -}
+refineStringToCase :: forall letterCase char. KnownCase letterCase => StringSuperset char =>
+    ASCII char -> ASCII'case letterCase char
+refineStringToCase = asciiCaseUnsafe . Superset.toCaseString (theCase @letterCase) . Refinement.lift

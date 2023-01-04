@@ -2,11 +2,29 @@
 
 Add to the `CharSuperset` class a new method:
 
-- `toCaseChar :: Case -> char -> char`
+```haskell
+toCaseChar :: Case -> char -> char
+```
 
 Add to the `StringSuperset` class a new method:
 
-- `toCaseString :: Case -> string -> string`
+```haskell
+toCaseString :: Case -> string -> string
+```
+
+Add to the `ASCII.CaseRefinement` module:
+
+```haskell
+refineCharToCase :: forall letterCase char.
+    KnownCase letterCase => CharSuperset char =>
+    ASCII char -> ASCII'case letterCase char
+```
+
+```haskell
+refineStringToCase :: forall letterCase char.
+    KnownCase letterCase => StringSuperset char =>
+    ASCII char -> ASCII'case letterCase char
+```
 
 ### 1.1.1.0 (2023-01-03)
 

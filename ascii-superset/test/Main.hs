@@ -147,3 +147,9 @@ main = hspec $ do
                 let x = "012 abc DEF ﬓ" :: Text
                 Superset.toCaseString UpperCase x `shouldBe` "012 ABC DEF ﬓ"
                 Superset.toCaseString LowerCase x `shouldBe` "012 abc def ﬓ"
+
+        describe "refineStringToCase" $ do
+            it "Text" $ do
+                let x = asciiUnsafe "Hi!" :: ASCII Text
+                CaseRefinement.refineStringToCase x `shouldBe` (asciiCaseUnsafe "HI!" :: ASCII'upper Text)
+                CaseRefinement.refineStringToCase x `shouldBe` (asciiCaseUnsafe "hi!" :: ASCII'lower Text)
