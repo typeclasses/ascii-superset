@@ -246,6 +246,9 @@ instance ToCaselessChar CaselessChar where
     isAsciiCaselessChar _ = Bool.True
     toCaselessCharUnsafe = id
 
+instance FromChar CaselessChar where
+    fromChar = Caseless.disregardCase
+
 ---
 
 instance ToCaselessChar ASCII.Char where
