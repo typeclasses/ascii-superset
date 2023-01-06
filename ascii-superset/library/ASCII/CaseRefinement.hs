@@ -18,7 +18,7 @@ import ASCII.Superset (CharSuperset, StringSuperset)
 import qualified ASCII.Case as Case
 import qualified ASCII.Caseless as Caseless
 import qualified ASCII.Char as ASCII
-import qualified ASCII.Superset as Superset
+import qualified ASCII.Superset as S
 import {-# source #-} qualified ASCII.Refinement as Refinement
 
 import Control.Monad (guard)
@@ -84,23 +84,23 @@ instance Show superset => Show (ASCII'case letterCase superset) where
 
     showList x = showString "asciiCaseUnsafe " . showList (List.map lift x)
 
-instance Superset.ToCaselessChar char => Superset.ToCaselessChar (ASCII'case letterCase char) where
+instance S.ToCaselessChar char => S.ToCaselessChar (ASCII'case letterCase char) where
     isAsciiCaselessChar _ = Bool.True
-    toCaselessCharUnsafe = Superset.toCaselessCharUnsafe . lift
+    toCaselessCharUnsafe = S.toCaselessCharUnsafe . lift
 
-instance Superset.CharSuperset char => Superset.ToChar (ASCII'case letterCase char) where
+instance S.CharSuperset char => S.ToChar (ASCII'case letterCase char) where
     isAsciiChar _ = Bool.True
-    toCharUnsafe = Superset.toCharUnsafe . lift
+    toCharUnsafe = S.toCharUnsafe . lift
 
-instance Superset.ToCaselessString string => Superset.ToCaselessString (ASCII'case letterCase string) where
+instance S.ToCaselessString string => S.ToCaselessString (ASCII'case letterCase string) where
     isAsciiCaselessString _ = Bool.True
-    toCaselessCharListUnsafe = Superset.toCaselessCharListUnsafe . lift
-    toCaselessCharListSub = Superset.toCaselessCharListSub . lift
+    toCaselessCharListUnsafe = S.toCaselessCharListUnsafe . lift
+    toCaselessCharListSub = S.toCaselessCharListSub . lift
 
-instance Superset.ToString string => Superset.ToString (ASCII'case letterCase string) where
+instance S.ToString string => S.ToString (ASCII'case letterCase string) where
     isAsciiString _ = Bool.True
-    toCharListUnsafe = Superset.toCharListUnsafe . lift
-    toCharListSub = Superset.toCharListUnsafe . lift
+    toCharListUnsafe = S.toCharListUnsafe . lift
+    toCharListSub = S.toCharListUnsafe . lift
 
 {-| Change the type of an ASCII superset value that is known to be valid ASCII where
     letters are restricted to the 'Case' designated by the @letterCase@ type variable
@@ -135,7 +135,7 @@ validateChar :: forall letterCase superset. KnownCase letterCase => CharSuperset
                   if a letter, may be in any case -}
     -> Maybe (ASCII'case letterCase superset)
 validateChar x = do
-    c <- Superset.toCharMaybe x
+    c <- S.toCharMaybe x
     guard (Bool.not (Case.isCase (Case.opposite (theCase @letterCase)) c))
     Just (asciiCaseUnsafe x)
 
@@ -145,7 +145,7 @@ substituteChar :: forall letterCase superset. KnownCase letterCase => CharSupers
     superset
     -> ASCII'case letterCase superset
 substituteChar x = case validateChar x of
-    Nothing -> asciiCaseUnsafe (Superset.fromChar ASCII.Substitute)
+    Nothing -> asciiCaseUnsafe (S.fromChar ASCII.Substitute)
     Just c -> c
 
 {-| Lift a 'CaselessChar' into a superset type, wrapped in the 'ASCII'case'
@@ -153,7 +153,7 @@ substituteChar x = case validateChar x of
 fromCaselessChar :: forall letterCase superset. KnownCase letterCase => CharSuperset superset =>
     CaselessChar -- ^ Character which, if it is a letter, does not have a specified case
     -> ASCII'case letterCase superset
-fromCaselessChar = asciiCaseUnsafe . Superset.fromChar . Caseless.toCase (theCase @letterCase)
+fromCaselessChar = asciiCaseUnsafe . S.fromChar . Caseless.toCase (theCase @letterCase)
 
 {-| Given a character from some type that is known to represent an ASCII
     character in a particular case, obtain the caseless ASCII character
@@ -162,7 +162,7 @@ toCaselessChar :: CharSuperset superset =>
     ASCII'case letterCase superset {- ^ Character that is known to be ASCII, and
                                         in the particular case if it is a letter -}
     -> CaselessChar
-toCaselessChar = Caseless.disregardCase . Superset.toCharUnsafe . lift
+toCaselessChar = Caseless.disregardCase . S.toCharUnsafe . lift
 
 {-| Given a character from a larger set that is known to represent an ASCII
     character, manipulate it as if it were an ASCII character -}
@@ -171,7 +171,7 @@ asCaselessChar :: forall letterCase superset. KnownCase letterCase => CharSupers
     -> ASCII'case letterCase superset {- ^ Character that is known to be ASCII, and
                                            in the particular case if it is a letter -}
     -> ASCII'case letterCase superset
-asCaselessChar f = asciiCaseUnsafe . Superset.asCharUnsafe g . lift
+asCaselessChar f = asciiCaseUnsafe . S.asCharUnsafe g . lift
   where
     g = Caseless.toCase (theCase @letterCase) . f . Caseless.assumeCaseUnsafe (theCase @letterCase)
 
@@ -179,7 +179,7 @@ asCaselessChar f = asciiCaseUnsafe . Superset.asCharUnsafe g . lift
     refine it further by converting it to a particular letter case -}
 refineCharToCase :: forall letterCase char. KnownCase letterCase => CharSuperset char =>
     ASCII char -> ASCII'case letterCase char
-refineCharToCase = asciiCaseUnsafe . Superset.toCaseChar (theCase @letterCase) . Refinement.lift
+refineCharToCase = asciiCaseUnsafe . S.toCaseChar (theCase @letterCase) . Refinement.lift
 
 ---
 
@@ -189,7 +189,7 @@ validateString :: forall letterCase superset. KnownCase letterCase => StringSupe
     superset -- ^ String which may or may not be valid ASCII, where letters may be in any case
     -> Maybe (ASCII'case letterCase superset)
 validateString x = do
-    s <- Superset.toCharListMaybe x
+    s <- S.toCharListMaybe x
     guard (Bool.not (any (Case.isCase (Case.opposite (theCase @letterCase))) s))
     Just (asciiCaseUnsafe x)
 
@@ -199,21 +199,21 @@ validateString x = do
 fromCaselessCharList :: forall letterCase superset. KnownCase letterCase => StringSuperset superset =>
     [CaselessChar] -- ^ Case-insensitive ASCII string represented as a list of caseless characters
     -> ASCII'case letterCase superset
-fromCaselessCharList = asciiCaseUnsafe . Superset.fromCharList . List.map (Caseless.toCase (theCase @letterCase))
+fromCaselessCharList = asciiCaseUnsafe . S.fromCharList . List.map (Caseless.toCase (theCase @letterCase))
 
 {-| Given a string from some type that is known to represent only ASCII characters
     in a particular case, obtain the caseless characters it represents -}
 toCaselessCharList :: forall letterCase superset. KnownCase letterCase => StringSuperset superset =>
     ASCII'case letterCase superset -- ^ String that is known to be valid ASCII in a particular case
     -> [CaselessChar]
-toCaselessCharList = List.map (Caseless.assumeCaseUnsafe (theCase @letterCase)) . Superset.toCharListUnsafe . lift
+toCaselessCharList = List.map (Caseless.assumeCaseUnsafe (theCase @letterCase)) . S.toCharListUnsafe . lift
 
 {-| Forces a string from a larger character set into cased ASCII by using the
     'ASCII.Substitute' character in place of any unacceptable characters -}
 substituteString :: forall letterCase superset. KnownCase letterCase => StringSuperset superset =>
     superset -- ^ String which may or may not be valid ASCII, where letters may be in any case
     -> ASCII'case letterCase superset
-substituteString = asciiCaseUnsafe . Superset.fromCharList . List.map f . Superset.toCharListSub
+substituteString = asciiCaseUnsafe . S.fromCharList . List.map f . S.toCharListSub
   where
     f x = if Case.isCase (Case.opposite (theCase @letterCase)) x
           then ASCII.Substitute
@@ -226,7 +226,7 @@ mapChars :: forall letterCase superset. KnownCase letterCase => StringSuperset s
     (CaselessChar -> CaselessChar) -- ^ Case-insensitive function over ASCII characters
     -> ASCII'case letterCase superset -- ^ String that is known to be valid ASCII in a particular case
     -> ASCII'case letterCase superset
-mapChars f = asciiCaseUnsafe . Superset.mapCharsUnsafe g . lift
+mapChars f = asciiCaseUnsafe . S.mapCharsUnsafe g . lift
   where
     g = Caseless.toCase (theCase @letterCase) . f . Caseless.assumeCaseUnsafe (theCase @letterCase)
 
@@ -234,4 +234,4 @@ mapChars f = asciiCaseUnsafe . Superset.mapCharsUnsafe g . lift
 refine it further by converting it to a particular letter case -}
 refineStringToCase :: forall letterCase char. KnownCase letterCase => StringSuperset char =>
     ASCII char -> ASCII'case letterCase char
-refineStringToCase = asciiCaseUnsafe . Superset.toCaseString (theCase @letterCase) . Refinement.lift
+refineStringToCase = asciiCaseUnsafe . S.toCaseString (theCase @letterCase) . Refinement.lift
