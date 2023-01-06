@@ -38,9 +38,13 @@ main = hspec $ do
             let f = Lift.lift
             f CapitalLetterA `shouldBe` 'A'
 
-        it "list" $ do
+        it "list to Text" $ do
             let f x = Lift.lift x :: Text
             f [CapitalLetterH, SmallLetterI, ExclamationMark] `shouldBe` "Hi!"
+
+        it "list to ASCII Text" $ do
+            let f x = Lift.lift x :: ASCII Text
+            f [CapitalLetterH, SmallLetterI, ExclamationMark] `shouldBe` (asciiUnsafe "Hi!")
 
         it "ASCII Word8" $ do
             let f x = Lift.lift (x :: ASCII Word8) :: Word8
