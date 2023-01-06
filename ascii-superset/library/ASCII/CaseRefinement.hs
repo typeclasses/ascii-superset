@@ -84,6 +84,24 @@ instance Show superset => Show (ASCII'case letterCase superset) where
 
     showList x = showString "asciiCaseUnsafe " . showList (List.map lift x)
 
+instance Superset.ToCaselessChar char => Superset.ToCaselessChar (ASCII'case letterCase char) where
+    isAsciiCaselessChar _ = Bool.True
+    toCaselessCharUnsafe = Superset.toCaselessCharUnsafe . lift
+
+instance Superset.CharSuperset char => Superset.ToChar (ASCII'case letterCase char) where
+    isAsciiChar _ = Bool.True
+    toCharUnsafe = Superset.toCharUnsafe . lift
+
+instance Superset.ToCaselessString string => Superset.ToCaselessString (ASCII'case letterCase string) where
+    isAsciiCaselessString _ = Bool.True
+    toCaselessCharListUnsafe = Superset.toCaselessCharListUnsafe . lift
+    toCaselessCharListSub = Superset.toCaselessCharListSub . lift
+
+instance Superset.ToString string => Superset.ToString (ASCII'case letterCase string) where
+    isAsciiString _ = Bool.True
+    toCharListUnsafe = Superset.toCharListUnsafe . lift
+    toCharListSub = Superset.toCharListUnsafe . lift
+
 {-| Change the type of an ASCII superset value that is known to be valid ASCII where
     letters are restricted to the 'Case' designated by the @letterCase@ type variable
 

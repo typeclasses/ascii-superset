@@ -1,3 +1,12 @@
+### 1.2.2.0 (2023-01-05)
+
+`ASCII'case` now has instances for:
+
+* `ToCaselessChar`
+* `ToChar`
+* `ToCaselessString`
+* `ToString`
+
 ### 1.2.1.0 (2023-01-05)
 
 Add `instance FromChar CaselessChar`
