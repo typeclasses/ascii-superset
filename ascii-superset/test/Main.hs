@@ -34,9 +34,21 @@ main = hspec $ do
             let f x = Lift.lift x :: Word8
             f CapitalLetterA `shouldBe` 65
 
+        it "to unicode" $ do
+            let f = Lift.lift
+            f CapitalLetterA `shouldBe` 'A'
+
         it "list" $ do
             let f x = Lift.lift x :: Text
             f [CapitalLetterH, SmallLetterI, ExclamationMark] `shouldBe` "Hi!"
+
+        it "ASCII Word8" $ do
+            let f x = Lift.lift (x :: ASCII Word8) :: Word8
+            f (asciiUnsafe 65) `shouldBe` 65
+
+        it "can be id" $ do
+            let f x = Lift.lift (x :: Unicode.Char) :: Unicode.Char
+            f 'x' `shouldBe` 'x'
 
     describe "refinement" $ do
 

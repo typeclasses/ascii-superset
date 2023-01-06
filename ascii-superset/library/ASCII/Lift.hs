@@ -35,6 +35,8 @@ class Lift subset superset where
 
     lift :: subset -> superset
 
+instance Lift a a where lift x = x
+
 {-| A value from an ASCII superset that has been refined by the 'ASCII' type
 constructor may be lifted back into the superset by unwrapping it from the
 'ASCII' type. -}

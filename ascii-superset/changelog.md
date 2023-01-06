@@ -1,3 +1,7 @@
+### 1.2.3.0 (2023-01-05)
+
+Add `instance Lift a a`
+
 ### 1.2.2.0 (2023-01-05)
 
 `ASCII'case` now has instances for:
