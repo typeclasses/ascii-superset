@@ -62,7 +62,10 @@ class ToCaselessChar char where
 
 This includes the 'ASCII.Char' type itself, character sets that are supersets
 of ASCII, and numeric types such as 'Word8' that are often used to represent
-ASCII characters. -}
+ASCII characters.
+
+This does /not/ include 'CaselessChar', because that cannot be converted to
+'ASCII.Char' without choosing a case. -}
 class ToCaselessChar char => ToChar char where
 
     -- | Test whether a character can be converted to 'ASCII.Char'
@@ -75,7 +78,11 @@ class ToCaselessChar char => ToChar char where
 
 This class includes supersets of ASCII, in which case 'fromChar' is a lifting
 function. It also includes 'CaselessChar', in which case 'fromChar' discards
-case information. -}
+case information.
+
+This does /not/ include 'ASCII.CaseRefinement.ASCII'case', because that represents
+a subset of 'ASCII.Char'; not all characters are of the wanted case, so no total
+conversion is possible without changing case. -}
 class FromChar char where
 
     -- | Conversion from 'ASCII.Char'
@@ -164,7 +171,10 @@ class ToCaselessString string where
 
 This includes @['ASCII.Char']@ type itself, strings of character sets that are
 supersets of ASCII, and sequences of numeric types such as 'Word8' that are
-often used to represent ASCII characters. -}
+often used to represent ASCII characters.
+
+This does /not/ include @['CaselessChar']@, because that cannot be converted
+to @['ASCII.Char']@ without choosing a case. -}
 class ToCaselessString string => ToString string where
 
     -- | Test whether a string can be converted to @['ASCII.Char']@
@@ -182,7 +192,12 @@ class ToCaselessString string => ToString string where
 
 This class includes supersets of ASCII, in which case 'fromCharList' lifts each
 character into the larger character set. It also includes @['CaselessChar']@, in
-which case 'fromCharList' discards case information from letters. -}
+which case 'fromCharList' discards case information from letters.
+
+This does /not/ include @['ASCII.CaseRefinement.ASCII'case']@, because that
+represents a subset of ASCII; not all ASCII characters are of case wanted by
+'ASCII.CaseRefinement.ASCII'case', so no total conversion is possible without
+changing case. -}
 class FromString string where
 
     -- | Conversion from @['ASCII.Char']@
