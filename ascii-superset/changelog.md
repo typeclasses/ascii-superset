@@ -1,3 +1,17 @@
+### 1.2.5.0 (2023-01-06)
+
+New in `ASCII.CaseRefinement`:
+
+```haskell
+forgetCase :: ASCII'case letterCase superset -> ASCII superset
+```
+
+And a new corresponding `Lift` instance:
+
+```haskell
+instance Lift (ASCII'case letterCase superset) (ASCII superset)
+```
+
 ### 1.2.4.0 (2023-01-05)
 
 New classes:

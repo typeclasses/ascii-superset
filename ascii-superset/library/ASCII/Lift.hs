@@ -44,6 +44,8 @@ instance Lift (ASCII superset) superset where lift = Refinement.lift
 
 instance Lift (ASCII'case letterCase superset) superset where lift = CaseRefinement.lift
 
+instance Lift (ASCII'case letterCase superset) (ASCII superset) where lift = CaseRefinement.forgetCase
+
 {-| An ASCII 'Char' may be 'lift'ed into any larger character set (a
 'CharSuperset'); for example, 'lift' can convert an ASCII character into a value
 of the standard 'Prelude.Char' type in "Prelude". -}

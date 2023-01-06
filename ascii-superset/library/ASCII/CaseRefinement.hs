@@ -1,6 +1,6 @@
 module ASCII.CaseRefinement
   (
-    {- * ASCII'case type constructor -} ASCII'case, lift, asciiCaseUnsafe,
+    {- * ASCII'case type constructor -} ASCII'case, lift, asciiCaseUnsafe, forgetCase,
     {- ** Aliases -} {- $aliases -} ASCII'upper, ASCII'lower,
     {- * Character functions -} validateChar, fromCaselessChar,
           toCaselessChar, substituteChar, asCaselessChar, refineCharToCase,
@@ -115,6 +115,9 @@ This is "unsafe" because this assertion is unchecked, so this function is capabl
 of producing an invalid 'ASCII'case' value. -}
 asciiCaseUnsafe :: superset -> ASCII'case letterCase superset
 asciiCaseUnsafe = ASCII'case_Unsafe
+
+forgetCase :: ASCII'case letterCase superset -> ASCII superset
+forgetCase = Refinement.asciiUnsafe . lift
 
 ---
 
