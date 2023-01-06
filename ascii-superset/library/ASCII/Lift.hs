@@ -1,3 +1,10 @@
+{-|
+
+@
+(lift CapitalLetterA :: Word8) == 65
+
+(lift [CapitalLetterH, SmallLetterI, ExclamationMark] :: Text) == "Hi!"
+@ -}
 module ASCII.Lift (Lift (..)) where
 
 import ASCII.Case (Case (..))
@@ -19,13 +26,7 @@ The @subset@ and @superset@ types may be characters or strings in
 ASCII, some subset of ASCII, or some superset of ASCII. -}
 class Lift subset superset where
 
-    {-| Converts from a smaller to a larger type.
-
-    >>> lift CapitalLetterA :: Word8
-    65
-
-    >>> lift [CapitalLetterH,SmallLetterI,ExclamationMark] :: Text
-    "Hi!"
+    {-| Converts from a smaller to a larger type
 
     Due to the highly polymorphic nature of the 'lift' function,
     often it must used with an explicit type signature or type
