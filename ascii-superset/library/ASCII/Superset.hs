@@ -1,12 +1,12 @@
 module ASCII.Superset
   (
     {- * Characters -}
-    {- ** Class -} ToCaselessChar (..), ToChar (..), FromChar (..), CharSuperset (..),
+    {- ** Class -} ToCaselessChar (..), ToChar (..), FromChar (..), CharSuperset (..), ToCasefulChar (..),
     {- ** Functions -} asCharUnsafe, toCharMaybe, toCaselessCharMaybe, toCharOrFail, toCaselessCharOrFail,
         toCharSub, toCaselessCharSub, substituteChar, convertCharMaybe, convertCharOrFail,
 
     {- * Strings -}
-    {- ** Class -} ToCaselessString (..), ToString (..), FromString (..), StringSuperset (..),
+    {- ** Class -} ToCaselessString (..), ToString (..), FromString (..), StringSuperset (..), ToCasefulString (..),
     {- ** Functions -} toCharListMaybe, toCaselessCharListMaybe, toCharListOrFail, toCaselessCharListOrFail,
         convertStringMaybe, convertStringOrFail
   )
@@ -14,6 +14,7 @@ module ASCII.Superset
 
 import ASCII.Case (Case (..))
 import ASCII.Caseless (CaselessChar)
+import {-# source #-} ASCII.CaseRefinement (KnownCase (..))
 import Control.Monad (return)
 import Control.Monad.Fail (MonadFail (fail))
 import Data.Bool (Bool, (&&))
@@ -98,6 +99,10 @@ class (ToChar char, FromChar char) => CharSuperset char where
     if it is an ASCII letter of the opposite case. Otherwise, return
     the argument unmodified. -}
     toCaseChar :: Case -> char -> char
+
+class ToCasefulChar (letterCase :: Case) char where
+
+    toCasefulChar :: CaselessChar -> char
 
 {-| Manipulate a character as if it were an ASCII 'ASCII.Char', assuming that it is
 
@@ -221,6 +226,10 @@ class (ToString string, FromString string) => StringSuperset string where
     an ASCII letter of the opposite case. Leaves other characters unchanged. -}
     toCaseString :: Case -> string -> string
 
+class ToCasefulString (letterCase :: Case) string where
+
+    toCasefulString :: [CaselessChar] -> string
+
 toCharListMaybe :: ToString string => string -> Maybe [ASCII.Char]
 toCharListMaybe = toCharListOrFail
 
@@ -281,6 +290,9 @@ instance FromChar ASCII.Char where
 instance CharSuperset ASCII.Char where
     toCaseChar = Case.toCase
 
+instance KnownCase letterCase => ToCasefulChar letterCase ASCII.Char where
+    toCasefulChar = Caseless.toCase (theCase @letterCase)
+
 ---
 
 instance ToCaselessChar Unicode.Char where
@@ -298,6 +310,9 @@ instance CharSuperset Unicode.Char where
     toCaseChar UpperCase x | x >= 'a' && x <= 'z' = Unicode.chr (Unicode.ord x - 32)
     toCaseChar LowerCase x | x >= 'A' && x <= 'Z' = Unicode.chr (Unicode.ord x + 32)
     toCaseChar _ x = x
+
+instance KnownCase letterCase => ToCasefulChar letterCase Unicode.Char where
+    toCasefulChar = fromChar . toCasefulChar @letterCase
 
 ---
 
@@ -317,6 +332,9 @@ instance CharSuperset Nat.Natural where
     toCaseChar LowerCase x | x >= 65 && x <= 90  = x + 32
     toCaseChar _ x = x
 
+instance KnownCase letterCase => ToCasefulChar letterCase Nat.Natural where
+    toCasefulChar = fromChar . toCasefulChar @letterCase
+
 ---
 
 instance ToCaselessChar Int.Int where
@@ -334,6 +352,9 @@ instance CharSuperset Int.Int where
     toCaseChar UpperCase x | x >= 97 && x <= 122 = x - 32
     toCaseChar LowerCase x | x >= 65 && x <= 90  = x + 32
     toCaseChar _ x = x
+
+instance KnownCase letterCase => ToCasefulChar letterCase Int.Int where
+    toCasefulChar = fromChar . toCasefulChar @letterCase
 
 ---
 
@@ -353,6 +374,9 @@ instance CharSuperset Word.Word8 where
     toCaseChar LowerCase x | x >= 65 && x <= 90  = x + 32
     toCaseChar _ x = x
 
+instance KnownCase letterCase => ToCasefulChar letterCase Word.Word8 where
+    toCasefulChar = fromChar . toCasefulChar @letterCase
+
 ---
 
 instance ToCaselessChar char => ToCaselessString [char] where
@@ -371,6 +395,9 @@ instance FromChar char => FromString [char] where
 instance CharSuperset char => StringSuperset [char] where
     substituteString = List.map substituteChar
     toCaseString c = List.map (toCaseChar c)
+
+instance (ToCasefulChar letterCase char, KnownCase letterCase) => ToCasefulString letterCase [char] where
+    toCasefulString = List.map (toCasefulChar @letterCase)
 
 ---
 
@@ -392,6 +419,9 @@ instance StringSuperset T.Text where
     mapCharsUnsafe f = T.map (asCharUnsafe f)
     toCaseString c   = T.map (toCaseChar c)
 
+instance KnownCase letterCase => ToCasefulString letterCase T.Text where
+    toCasefulString = fromCharList . toCasefulString @letterCase
+
 ---
 
 instance ToCaselessString LT.Text where
@@ -411,6 +441,9 @@ instance StringSuperset LT.Text where
     substituteString = LT.map substituteChar
     mapCharsUnsafe f = LT.map (asCharUnsafe f)
     toCaseString c   = LT.map (toCaseChar c)
+
+instance KnownCase letterCase => ToCasefulString letterCase LT.Text where
+    toCasefulString = fromCharList . toCasefulString @letterCase
 
 ---
 
@@ -432,6 +465,9 @@ instance StringSuperset TB.Builder where
     mapCharsUnsafe f = TB.fromLazyText . mapCharsUnsafe f . TB.toLazyText
     toCaseString c   = TB.fromLazyText . toCaseString c   . TB.toLazyText
 
+instance KnownCase letterCase => ToCasefulString letterCase TB.Builder where
+    toCasefulString = fromCharList . toCasefulString @letterCase
+
 ---
 
 instance ToCaselessString BS.ByteString where
@@ -451,6 +487,9 @@ instance StringSuperset BS.ByteString where
     substituteString = BS.map substituteChar
     mapCharsUnsafe f = BS.map (asCharUnsafe f)
     toCaseString c   = BS.map (toCaseChar c)
+
+instance KnownCase letterCase => ToCasefulString letterCase BS.ByteString where
+    toCasefulString = fromCharList . toCasefulString @letterCase
 
 ---
 
@@ -472,6 +511,9 @@ instance StringSuperset LBS.ByteString where
     mapCharsUnsafe f = LBS.map (asCharUnsafe f)
     toCaseString c   = LBS.map (toCaseChar c)
 
+instance KnownCase letterCase => ToCasefulString letterCase LBS.ByteString where
+    toCasefulString = fromCharList . toCasefulString @letterCase
+
 ---
 
 instance ToCaselessString BSB.Builder where
@@ -491,3 +533,6 @@ instance StringSuperset BSB.Builder where
     substituteString = BSB.lazyByteString . substituteString . BSB.toLazyByteString
     mapCharsUnsafe f = BSB.lazyByteString . mapCharsUnsafe f . BSB.toLazyByteString
     toCaseString c   = BSB.lazyByteString . toCaseString c   . BSB.toLazyByteString
+
+instance KnownCase letterCase => ToCasefulString letterCase BSB.Builder where
+    toCasefulString = fromCharList . toCasefulString @letterCase

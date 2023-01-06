@@ -1,3 +1,17 @@
+### 1.2.4.0 (2023-01-05)
+
+New classes:
+
+```haskell
+class ToCasefulChar (letterCase :: Case) char where
+    toCasefulChar :: CaselessChar -> char
+```
+
+```haskell
+class ToCasefulString (letterCase :: Case) string where
+    toCasefulString :: [CaselessChar] -> string
+```
+
 ### 1.2.3.0 (2023-01-05)
 
 Add `instance Lift a a`

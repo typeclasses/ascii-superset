@@ -102,6 +102,12 @@ instance S.ToString string => S.ToString (ASCII'case letterCase string) where
     toCharListUnsafe = S.toCharListUnsafe . lift
     toCharListSub = S.toCharListUnsafe . lift
 
+instance (S.FromChar superset, KnownCase letterCase) => S.ToCasefulChar letterCase (ASCII'case letterCase superset) where
+    toCasefulChar = asciiCaseUnsafe . S.fromChar . Caseless.toCase (theCase @letterCase)
+
+instance (S.FromString superset, KnownCase letterCase) => S.ToCasefulString letterCase (ASCII'case letterCase superset) where
+    toCasefulString = asciiCaseUnsafe . S.fromCharList . List.map (Caseless.toCase (theCase @letterCase))
+
 {-| Change the type of an ASCII superset value that is known to be valid ASCII where
     letters are restricted to the 'Case' designated by the @letterCase@ type variable
 

@@ -169,3 +169,39 @@ main = hspec $ do
                 let x = asciiUnsafe "Hi!" :: ASCII Text
                 CaseRefinement.refineStringToCase x `shouldBe` (asciiCaseUnsafe "HI!" :: ASCII'upper Text)
                 CaseRefinement.refineStringToCase x `shouldBe` (asciiCaseUnsafe "hi!" :: ASCII'lower Text)
+
+        describe "toCasefulChar" $ do
+
+            describe "lower case" $ do
+                let a :: Superset.ToCasefulChar 'LowerCase char => char
+                    a = Superset.toCasefulChar @'LowerCase CC.LetterA
+
+                it "can be Char"              $ a `shouldBe` SmallLetterA
+                it "can be superset type"     $ a `shouldBe` 'a'
+                it "can be case-refined type" $ a `shouldBe` (asciiCaseUnsafe 'a' :: ASCII'lower Unicode.Char)
+
+            describe "upper case" $ do
+                let a :: Superset.ToCasefulChar 'UpperCase char => char
+                    a = Superset.toCasefulChar @'UpperCase CC.LetterA
+
+                it "can be Char"              $ a `shouldBe` CapitalLetterA
+                it "can be superset type"     $ a `shouldBe` 'A'
+                it "can be case-refined type" $ a `shouldBe` (asciiCaseUnsafe 'A' :: ASCII'upper Unicode.Char)
+
+        describe "toCasefulString" $ do
+
+            describe "lower case" $ do
+                let x :: Superset.ToCasefulString 'LowerCase string => string
+                    x = Superset.toCasefulString @'LowerCase [CC.LetterH, CC.LetterI, CC.ExclamationMark]
+
+                it "can be [Char]"            $ x `shouldBe` [SmallLetterH, SmallLetterI, ExclamationMark]
+                it "can be superset type"     $ x `shouldBe` ("hi!" :: Text)
+                it "can be case-refined type" $ x `shouldBe` (asciiCaseUnsafe "hi!" :: ASCII'lower Text)
+
+            describe "upper case" $ do
+                let x :: Superset.ToCasefulString 'UpperCase string => string
+                    x = Superset.toCasefulString @'UpperCase [CC.LetterH, CC.LetterI, CC.ExclamationMark]
+
+                it "can be [Char]"            $ x `shouldBe` [CapitalLetterH, CapitalLetterI, ExclamationMark]
+                it "can be superset type"     $ x `shouldBe` ("HI!" :: Text)
+                it "can be case-refined type" $ x `shouldBe` (asciiCaseUnsafe "HI!" :: ASCII'upper Text)
