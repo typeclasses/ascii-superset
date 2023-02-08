@@ -71,6 +71,7 @@ library
     exposed-modules:
         ASCII.CaseRefinement
         ASCII.Superset
+        ASCII.SupersetConversion
         ASCII.Isomorphism
         ASCII.Refinement
         ASCII.Lift
