@@ -26,13 +26,13 @@ instance StringSupersetConversion T.Text BS.ByteString where
     convertStringUnsafe = T.encodeUtf8
 
 instance StringSupersetConversion BS.ByteString T.Text where
-    convertStringUnsafe = T.decodeASCII
+    convertStringUnsafe = T.decodeUtf8
 
 instance StringSupersetConversion LT.Text LBS.ByteString where
     convertStringUnsafe = LT.encodeUtf8
 
 instance StringSupersetConversion LBS.ByteString LT.Text where
-    convertStringUnsafe = LT.decodeASCII
+    convertStringUnsafe = LT.decodeUtf8
 
 instance StringSupersetConversion T.Text LT.Text where
     convertStringUnsafe = LT.fromStrict
