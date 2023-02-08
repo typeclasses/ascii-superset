@@ -12,14 +12,14 @@ module ASCII.CaseRefinement
 
 import ASCII.Case (Case (..))
 import ASCII.Caseless (CaselessChar)
-import {-# source #-} ASCII.Refinement (ASCII)
+import {-# source #-} ASCII.Refinement.Internal (ASCII)
 import ASCII.Superset (CharSuperset, StringSuperset)
 
 import qualified ASCII.Case as Case
 import qualified ASCII.Caseless as Caseless
 import qualified ASCII.Char as ASCII
 import qualified ASCII.Superset as S
-import {-# source #-} qualified ASCII.Refinement as Refinement
+import {-# source #-} qualified ASCII.Refinement.Internal as Refinement
 
 import Control.Monad (guard)
 import Data.Bool (Bool (..))

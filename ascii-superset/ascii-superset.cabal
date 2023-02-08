@@ -76,6 +76,9 @@ library
         ASCII.Refinement
         ASCII.Lift
 
+    other-modules:
+        ASCII.Refinement.Internal
+
 test-suite test-ascii-superset
     import: base
     type: exitcode-stdio-1.0

@@ -10,11 +10,11 @@ module ASCII.Lift (Lift (..)) where
 import ASCII.Case (Case (..))
 import ASCII.CaseRefinement (ASCII'case)
 import ASCII.Char (Char)
-import ASCII.Refinement (ASCII)
+import ASCII.Refinement.Internal (ASCII)
 import ASCII.Superset (CharSuperset, StringSuperset)
 
 import qualified ASCII.CaseRefinement as CaseRefinement
-import qualified ASCII.Refinement as Refinement
+import qualified ASCII.Refinement.Internal as Refinement
 import qualified ASCII.Superset as S
 
 import qualified Prelude

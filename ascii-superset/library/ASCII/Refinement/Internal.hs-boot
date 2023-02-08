@@ -1,4 +1,4 @@
-module ASCII.Refinement where
+module ASCII.Refinement.Internal where
 
 data ASCII superset
 
