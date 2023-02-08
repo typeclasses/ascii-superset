@@ -54,7 +54,6 @@ common base
 
 library
     import: base
-    ghc-options: -fno-warn-unused-imports
     hs-source-dirs: library
 
     default-extensions:

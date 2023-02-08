@@ -22,17 +22,15 @@ import qualified ASCII.Superset as S
 import {-# source #-} qualified ASCII.Refinement.Internal as Refinement
 
 import Control.Monad (guard)
-import Data.Bool (Bool (..))
 import Data.Data (Data, Typeable)
 import Data.Eq (Eq)
 import Data.Foldable (any)
-import Data.Function (id, ($), (.))
+import Data.Function (($), (.))
 import Data.Hashable (Hashable)
 import Data.Maybe (Maybe (..))
 import Data.Monoid (Monoid)
 import Data.Ord (Ord, (>))
 import Data.Semigroup (Semigroup)
-import Data.Traversable (traverse)
 import GHC.Generics (Generic)
 import Prelude (succ)
 import Text.Show (Show, showList, showParen, showString, showsPrec)

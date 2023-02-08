@@ -4,7 +4,6 @@ import qualified ASCII.Char as ASCII
 import qualified ASCII.Isomorphism as I
 import qualified ASCII.Superset as S
 
-import ASCII.CaseRefinement (KnownCase (..), ASCII'case, ASCII'upper, ASCII'lower)
 import Data.Data (Data)
 import Data.Eq (Eq)
 import Data.Function (id, ($), (.))

@@ -7,23 +7,12 @@ module ASCII.SupersetConversion
 
 import ASCII.Superset
 
-import qualified ASCII.Case as Case
-import qualified ASCII.Caseless as Caseless
-import qualified ASCII.Char as ASCII
-import qualified Data.Bool as Bool
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as LBS
-import qualified Data.Char as Unicode
-import qualified Data.Int as Int
-import qualified Data.List as List
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Encoding as LT
-import qualified Data.Word as Word
-import qualified Numeric.Natural as Nat
-import qualified Prelude
 
 class (StringSuperset a, StringSuperset b) => StringSupersetConversion a b where
     convertStringUnsafe :: a -> b
