@@ -4,6 +4,7 @@ import qualified ASCII.Char as ASCII
 import qualified ASCII.Isomorphism as I
 import qualified ASCII.Superset as S
 
+import {-# source #-} ASCII.SupersetConversion (StringSupersetConversion)
 import Data.Data (Data)
 import Data.Eq (Eq)
 import Data.Function (id, ($), (.))
@@ -18,6 +19,7 @@ import Prelude (succ)
 
 import qualified Data.Bool as Bool
 import qualified Text.Show as Show
+import {-# source #-} qualified ASCII.SupersetConversion as SupersetConversion
 
 {-| This type constructor indicates that a value from some ASCII superset
     is valid ASCII
@@ -158,3 +160,7 @@ asChar f = asciiUnsafe . S.asCharUnsafe f . lift
 
 mapChars :: S.StringSuperset superset => (ASCII.Char -> ASCII.Char) -> ASCII superset -> ASCII superset
 mapChars f = asciiUnsafe . S.mapCharsUnsafe f . lift
+
+{-| For example, this function can convert @ASCII ByteString@ to @ASCII Text@ and vice versa -}
+convertRefinedString :: StringSupersetConversion a b => ASCII a -> ASCII b
+convertRefinedString (ASCII_Unsafe x) = ASCII_Unsafe (SupersetConversion.convertStringUnsafe x)

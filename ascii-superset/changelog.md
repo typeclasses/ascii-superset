@@ -1,3 +1,13 @@
+### 1.2.6.0 (2023-02-07)
+
+New module `ASCII.SupersetConversion` containing a new class,
+`StringSupersetConversion`, and the following function:
+
+```haskell
+convertRefinedString ::
+    StringSupersetConversion a b => ASCII a -> ASCII b
+```
+
 ### 1.2.5.0 (2023-01-06)
 
 New in `ASCII.CaseRefinement`:

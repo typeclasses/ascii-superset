@@ -1,11 +1,13 @@
 module ASCII.SupersetConversion
   (
     {- * Class -} StringSupersetConversion (..),
-    {- * Utilities -}
+    {- * Utilities -} convertRefinedString,
   )
   where
 
 import ASCII.Superset
+
+import {-# source #-} ASCII.Refinement.Internal (convertRefinedString)
 
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LBS
