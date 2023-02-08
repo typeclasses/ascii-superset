@@ -1,3 +1,7 @@
+### 1.2.7.0 (2023-02-08)
+
+Add module `ASCII.Superset.Text`
+
 ### 1.2.6.0 (2023-02-07)
 
 New module `ASCII.SupersetConversion` containing a new class,
