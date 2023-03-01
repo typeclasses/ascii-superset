@@ -1,3 +1,13 @@
+### 1.3.0.0 (2023-02-28)
+
+Removed the `ASCII.Lift` module. The `Lift` class is now gone. It was a mess. It
+was not possible to define a comprehensive set of instances for this class, and
+as a user it was difficult to guess what types `lift` would work on.
+
+All of the `lift` implementations were just other functions anyway: `fromChar`,
+`fromCharList`, `ASCII.Refinement.lift`, etc. Use one of those other polymorphic
+but slightly more specific functions instead.
+
 ### 1.2.7.0 (2023-02-08)
 
 Add module `ASCII.Superset.Text`

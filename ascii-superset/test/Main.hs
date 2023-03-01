@@ -6,12 +6,12 @@ import ASCII.Case (Case (..))
 import ASCII.CaseRefinement (ASCII'lower, ASCII'upper, asciiCaseUnsafe)
 import ASCII.Char (Char (..))
 import ASCII.Refinement (ASCII, asciiUnsafe)
+import ASCII.Superset (fromChar, fromCharList)
 
 import qualified ASCII.Case as Case
 import qualified ASCII.Caseless as CC
 import qualified ASCII.CaseRefinement as CaseRefinement
 import qualified ASCII.Char as ASCII
-import qualified ASCII.Lift as Lift
 import qualified ASCII.Refinement as Refinement
 import qualified ASCII.Superset as Superset
 
@@ -28,31 +28,19 @@ import qualified Data.Char as Unicode
 main :: IO ()
 main = hspec $ do
 
-    describe "lift" $ do
+    describe "fromChar" $ do
 
         it "letter" $ do
-            let f x = Lift.lift x :: Word8
+            let f x = fromChar x :: Word8
             f CapitalLetterA `shouldBe` 65
 
         it "to unicode" $ do
-            let f = Lift.lift
+            let f = fromChar
             f CapitalLetterA `shouldBe` 'A'
 
-        it "list to Text" $ do
-            let f x = Lift.lift x :: Text
-            f [CapitalLetterH, SmallLetterI, ExclamationMark] `shouldBe` "Hi!"
-
-        it "list to ASCII Text" $ do
-            let f x = Lift.lift x :: ASCII Text
-            f [CapitalLetterH, SmallLetterI, ExclamationMark] `shouldBe` (asciiUnsafe "Hi!")
-
-        it "ASCII Word8" $ do
-            let f x = Lift.lift (x :: ASCII Word8) :: Word8
-            f (asciiUnsafe 65) `shouldBe` 65
-
-        it "can be id" $ do
-            let f x = Lift.lift (x :: Unicode.Char) :: Unicode.Char
-            f 'x' `shouldBe` 'x'
+        it "id" $ do
+            let f x = fromChar (x :: ASCII.Char) :: ASCII.Char
+            f CapitalLetterA `shouldBe` CapitalLetterA
 
     describe "refinement" $ do
 
@@ -63,9 +51,14 @@ main = hspec $ do
             f 97 `shouldBe` Just (asciiUnsafe 97)
             f 128 `shouldBe` Nothing
 
-        it "fromCharList" $ do
-            let f x = Refinement.fromCharList x :: ASCII Text
-            f [CapitalLetterH, SmallLetterI, ExclamationMark] `shouldBe` asciiUnsafe "Hi!"
+        describe "fromCharList" $ do
+            it "Text" $ do
+                let f x = fromCharList x :: Text
+                f [CapitalLetterH, SmallLetterI, ExclamationMark] `shouldBe` "Hi!"
+
+            it "ASCII Text" $ do
+                let f x = Refinement.fromCharList x :: ASCII Text
+                f [CapitalLetterH, SmallLetterI, ExclamationMark] `shouldBe` asciiUnsafe "Hi!"
 
         it "toCharList" $ do
             let f x = Refinement.toCharList
@@ -149,8 +142,8 @@ main = hspec $ do
                 check =
                     ([UpperCase, LowerCase] & Foldable.all (\c ->
                         ASCII.allCharacters & Foldable.all (\x ->
-                            Superset.toCaseChar c (Superset.fromChar @a x)
-                                == Superset.fromChar @a (Case.toCase c x)
+                            Superset.toCaseChar c (fromChar @a x)
+                                == fromChar @a (Case.toCase c x)
                     ))) `shouldBe` True
             it "ASCII.Char" $ check @ASCII.Char
             it "Unicode.Char" $ check @Unicode.Char
