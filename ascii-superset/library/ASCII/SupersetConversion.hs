@@ -1,73 +1,77 @@
 module ASCII.SupersetConversion
-  (
-    {- * Class -} StringSupersetConversion (..),
-    {- * Utilities -} convertRefinedString,
+  ( -- * Class
+    StringSupersetConversion (..),
+
+    -- * Utilities
+    convertRefinedString,
   )
-  where
+where
 
+import {-# SOURCE #-} ASCII.Refinement.Internal (convertRefinedString)
 import ASCII.Superset
+import Data.ByteString qualified as BS
+import Data.ByteString.Char8 qualified as BS.Char8
+import Data.ByteString.Lazy qualified as LBS
+import Data.ByteString.Lazy.Char8 qualified as LBS.Char8
+import Data.Char qualified as Unicode
+import Data.Kind (Type)
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
+import Data.Text.Lazy qualified as LT
+import Data.Text.Lazy.Encoding qualified as LT
 
-import {-# source #-} ASCII.Refinement.Internal (convertRefinedString)
-
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BS.Char8
-import qualified Data.ByteString.Lazy as LBS
-import qualified Data.ByteString.Lazy.Char8 as LBS.Char8
-import qualified Data.Char as Unicode
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
-import qualified Data.Text.Lazy as LT
-import qualified Data.Text.Lazy.Encoding as LT
-
-class (StringSuperset a, StringSuperset b) => StringSupersetConversion a b where
-    convertStringUnsafe :: a -> b
+class
+  (StringSuperset a, StringSuperset b) =>
+  StringSupersetConversion (a :: Type) (b :: Type)
+  where
+  convertStringUnsafe :: a -> b
 
 instance StringSupersetConversion T.Text BS.ByteString where
-    convertStringUnsafe = T.encodeUtf8
+  convertStringUnsafe = T.encodeUtf8
 
 instance StringSupersetConversion BS.ByteString T.Text where
-    convertStringUnsafe = T.decodeUtf8
+  convertStringUnsafe = T.decodeUtf8
 
 instance StringSupersetConversion LT.Text LBS.ByteString where
-    convertStringUnsafe = LT.encodeUtf8
+  convertStringUnsafe = LT.encodeUtf8
 
 instance StringSupersetConversion LBS.ByteString LT.Text where
-    convertStringUnsafe = LT.decodeUtf8
+  convertStringUnsafe = LT.decodeUtf8
 
 instance StringSupersetConversion T.Text LT.Text where
-    convertStringUnsafe = LT.fromStrict
+  convertStringUnsafe = LT.fromStrict
 
 instance StringSupersetConversion LT.Text T.Text where
-    convertStringUnsafe = LT.toStrict
+  convertStringUnsafe = LT.toStrict
 
 instance StringSupersetConversion BS.ByteString LBS.ByteString where
-    convertStringUnsafe = LBS.fromStrict
+  convertStringUnsafe = LBS.fromStrict
 
 instance StringSupersetConversion LBS.ByteString BS.ByteString where
-    convertStringUnsafe = LBS.toStrict
+  convertStringUnsafe = LBS.toStrict
 
 ---
 
 instance StringSupersetConversion T.Text [Unicode.Char] where
-    convertStringUnsafe = T.unpack
+  convertStringUnsafe = T.unpack
 
 instance StringSupersetConversion [Unicode.Char] T.Text where
-    convertStringUnsafe = T.pack
+  convertStringUnsafe = T.pack
 
 instance StringSupersetConversion LT.Text [Unicode.Char] where
-    convertStringUnsafe = LT.unpack
+  convertStringUnsafe = LT.unpack
 
 instance StringSupersetConversion [Unicode.Char] LT.Text where
-    convertStringUnsafe = LT.pack
+  convertStringUnsafe = LT.pack
 
 instance StringSupersetConversion BS.ByteString [Unicode.Char] where
-    convertStringUnsafe = BS.Char8.unpack
+  convertStringUnsafe = BS.Char8.unpack
 
 instance StringSupersetConversion [Unicode.Char] BS.ByteString where
-    convertStringUnsafe = BS.Char8.pack
+  convertStringUnsafe = BS.Char8.pack
 
 instance StringSupersetConversion LBS.ByteString [Unicode.Char] where
-    convertStringUnsafe = LBS.Char8.unpack
+  convertStringUnsafe = LBS.Char8.unpack
 
 instance StringSupersetConversion [Unicode.Char] LBS.ByteString where
-    convertStringUnsafe = LBS.Char8.pack
+  convertStringUnsafe = LBS.Char8.pack

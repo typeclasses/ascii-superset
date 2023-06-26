@@ -1,3 +1,7 @@
+### 1.3.0.1 (2023-06-26)
+
+Raised language version to GHC2021.
+
 ### 1.3.0.0 (2023-02-28)
 
 Removed the `ASCII.Lift` module. The `Lift` class is now gone. It was a mess. It
